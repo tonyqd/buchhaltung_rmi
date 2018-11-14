@@ -9,7 +9,6 @@ import java.rmi.server.UnicastRemoteObject;
 import base.ConnectionManager;
 import base.DatenbankManager;
 import base.RMIStarter;
-import server.datenbank.DatenbankConnect;
 import server.imp.ConnectionManagerImp;
 import server.imp.DatenbankManagerImp;
 
@@ -23,8 +22,8 @@ public class ServerStarter extends RMIStarter {
 		int index = 0;
 		int port = Integer.parseInt(args[index++]);
 		new ServerStarter(port);
-		DatenbankConnect dbConnection = new DatenbankConnect();
-		dbConnection.initConnection();
+//		DatenbankConnect dbConnection = new DatenbankConnect();
+//		dbConnection.initConnection();
 	}
 
 	@Override
@@ -69,7 +68,18 @@ public class ServerStarter extends RMIStarter {
 					"[" +datenbankStub + "]");
 		}
 		catch(Exception e) {
-			e.printStackTrace();
+			try{
+			DatenbankManager datenbank = new DatenbankManagerImp();
+			DatenbankManager datenbankStub = (DatenbankManager)UnicastRemoteObject.exportObject(datenbank, 0);
+			registry = LocateRegistry.getRegistry(port);
+			registry.rebind(DatenbankManager.SERVICE_NAME, datenbankStub);
+			System.out.println("Registered: " + DatenbankManager.SERVICE_NAME + " -> " + datenbankStub.getClass().getName() + 
+					"[" +datenbankStub + "]");
+			}
+			catch(Exception e1)
+			{
+				e1.printStackTrace();
+			}
 		}
 
 

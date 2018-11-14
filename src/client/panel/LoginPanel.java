@@ -10,6 +10,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.rmi.RemoteException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -22,8 +23,10 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import base.ConnectionManager;
+import base.DatenbankManager;
+import client.manager.ServerSystemManager;
 import cookxml.cookswing.CookSwing;
-import server.datenbank.DatenbankConnect;
 
 public class LoginPanel extends JPanel {
 
@@ -33,19 +36,20 @@ public class LoginPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 
 	public  JFrame mainFrame;
-	public  DatenbankConnect DBConnection;
 	private ResourceBundle bundle;
-
 	private CookSwing cookSwing;
-
+	
 	public JTextField	textFieldBenutzer = null;
 	public JPasswordField  textFieldPasswort = null;
 	public JButton   buttonOK;
 	public JButton   buttonAbrechen;
 	public JLabel    textRegistieren;
 
-	
-	public int usernumber = -1;
+	protected DatenbankManager datenbankStub = null; 
+	protected ConnectionManager connectionStub = null;
+	protected int usernumber = -1;
+
+
 	
 	public LoginPanel(JFrame mainFrame)
 	{
@@ -56,10 +60,16 @@ public class LoginPanel extends JPanel {
 		cookSwing.setResourceBundle(bundle);
 	}
 
+	//******************* View **************************************// 
 	public void init()
 	{
+		initGUI();
+	}
+	
+	private void initGUI()
+	{
 		mainFrame = (JFrame)cookSwing.render("src/client/panel/ext/loginPanel.xml");
-		
+
 		// Get the size of the screen
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -71,12 +81,14 @@ public class LoginPanel extends JPanel {
 
 		// Move the window
 		mainFrame.setLocation(x, y);
-
 		mainFrame.pack();
 		mainFrame.setVisible(true);
-
 	}
 
+
+
+
+	// **************** Controller *******************************************// 
 	public ActionListener loginCloseAction = new ActionListener ()
 	{
 		public void actionPerformed (ActionEvent e)
@@ -85,11 +97,10 @@ public class LoginPanel extends JPanel {
 			if (leave)
 			{
 				mainFrame.dispose();
-				DBConnection.closeConnection();
 			}
 		}
 	};
-	
+
 	public WindowListener frameListener = new WindowAdapter ()
 	{
 		public void windowClosing (WindowEvent e)
@@ -98,7 +109,6 @@ public class LoginPanel extends JPanel {
 			if (leave)
 			{
 				mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				DBConnection.closeConnection();
 				mainFrame.dispose();
 			}
 			else
@@ -107,18 +117,18 @@ public class LoginPanel extends JPanel {
 			}
 		}
 	};
-	
+
 	public MouseListener registierenListener = new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-//        	AnmeldePanel anmeldePanel	= new AnmeldePanel(mainFrame, DBConnection);
-//        	anmeldePanel.init();
-        	
-        	System.out.println("Registieren!");
-        	
-        }
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			//        	AnmeldePanel anmeldePanel	= new AnmeldePanel(mainFrame, DBConnection);
+			//        	anmeldePanel.init();
+
+			System.out.println("Registieren!");
+
+		}
 	};
-	
+
 	public ActionListener loginOkAction = new ActionListener ()
 	{
 		public void actionPerformed (ActionEvent e)
@@ -127,7 +137,7 @@ public class LoginPanel extends JPanel {
 			String benutzerErrorMessage = bundle.getString("benutzerErrorMessage");
 			String passwortErrorMessage = bundle.getString("passwortErrorMessage");
 			String anmeldungErrorMessage = bundle.getString("anmeldungErrorMessage");
-			
+
 			String benutzerString = textFieldBenutzer.getText();
 			String passwortString = "";
 			if (benutzerString.equals(""))
@@ -135,20 +145,24 @@ public class LoginPanel extends JPanel {
 				JOptionPane.showMessageDialog(mainFrame, benutzerErrorMessage);
 				return;
 			}
-			
+
 			if (passwort.length == 0)
 			{
 				JOptionPane.showMessageDialog(mainFrame, passwortErrorMessage);
 				return;
 			}
-			
+
 			// Wenn Benutzername und Passwort eingegeben sind
 			for(int i = 0; i < passwort.length; i++)
 			{
 				passwortString = passwortString + passwort[i];
 			}
-			usernumber = DBConnection.userLogin(benutzerString, passwortString);
-			
+			try {
+				usernumber = getDatenbankManager().userLogin(benutzerString, passwortString);
+			} catch (RemoteException e1) {
+				System.out.println("Datenbank connection error!");
+			} 
+
 			if (usernumber == -1)
 			{
 				JOptionPane.showMessageDialog(mainFrame, anmeldungErrorMessage);
@@ -156,12 +170,13 @@ public class LoginPanel extends JPanel {
 			}
 			else
 			{
+				JOptionPane.showMessageDialog(mainFrame, "successful!");
 				mainFrame.dispose();
 			}
 			return;
 		}
 	};
-	
+
 
 	protected boolean notifyForLeaving()
 	{
@@ -198,7 +213,9 @@ public class LoginPanel extends JPanel {
 		public void windowActivated(WindowEvent arg0) {}
 
 		@Override
-		public void windowClosed(WindowEvent arg0) {}
+		public void windowClosed(WindowEvent arg0) {
+			mainFrame.dispose();
+		}
 
 		@Override
 		public void windowClosing(WindowEvent arg0) {
@@ -206,7 +223,6 @@ public class LoginPanel extends JPanel {
 			if (leave)
 			{
 				mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				DBConnection.closeConnection();
 				mainFrame.dispose();
 			}
 			else
@@ -229,5 +245,23 @@ public class LoginPanel extends JPanel {
 
 	}
 
+	protected ConnectionManager getConnectionManager()
+	{
+		if (connectionStub == null)
+		{
+			connectionStub = ServerSystemManager.getConnectionManager();
+		}
+			return connectionStub;
+	}
+	
+	protected DatenbankManager getDatenbankManager()
+	{
+		if (datenbankStub == null)
+		{
+			datenbankStub = ServerSystemManager.getDatenbankManager();
+		}
+			return datenbankStub;
+	}
+	
 }
 
