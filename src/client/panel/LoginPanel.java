@@ -166,6 +166,7 @@ public class LoginPanel extends JPanel {
 			if (usernumber == -1)
 			{
 				JOptionPane.showMessageDialog(mainFrame, anmeldungErrorMessage);
+				textFieldPasswort.setText("");
 				return;
 			}
 			else
