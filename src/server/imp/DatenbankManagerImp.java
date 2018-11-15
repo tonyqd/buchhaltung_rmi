@@ -23,7 +23,14 @@ public class DatenbankManagerImp implements DatenbankManager{
 	}
 	
 	public int userLogin(String username, String passwort) throws RemoteException{
-		
+		return checkUserLogin(username, passwort);
+	}
+
+	
+	
+	
+	private int checkUserLogin(String username, String passwort)
+	{
 		Statement statement = null;
 		String SQLStatement = null;
 		ResultSet resultSet = null;
@@ -62,8 +69,8 @@ public class DatenbankManagerImp implements DatenbankManager{
 			return -1;
 		}
 		
+		
 	}
-	
 	
 	private Connection connectDatenbankServer()
 	{

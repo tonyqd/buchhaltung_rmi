@@ -14,11 +14,17 @@
 						<idref ctor="gbcsSS" gridy="1" gridx="0">
 							<label text="@kennwort" />
 						</idref>
+						<idref ctor="gbcsSS" gridy="2" gridx="0">
+							<label text="@kennwort" />
+						</idref>
 						<idref ctor="gbcsSS" gridy="0" gridx="1" weightx="10">
 							<textfield var="textFieldBenutzer" actionlistener="loginOkAction"/>
 						</idref>
 						<idref ctor="gbcsSS" gridy="1" gridx="1"  weightx="10">
-							<passwordfield var="textFieldPasswort" actionlistener="loginOkAction"/>
+							<passwordfield var="textFieldPasswort1" actionlistener="loginOkAction"/>
+						</idref>
+						<idref ctor="gbcsSS" gridy="2" gridx="1"  weightx="10">
+							<passwordfield var="textFieldPasswort2" actionlistener="loginOkAction"/>
 						</idref>
 					</gridbaglayout>
 				</panel>

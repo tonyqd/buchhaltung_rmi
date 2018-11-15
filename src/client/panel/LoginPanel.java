@@ -38,7 +38,7 @@ public class LoginPanel extends JPanel {
 	public  JFrame mainFrame;
 	private ResourceBundle bundle;
 	private CookSwing cookSwing;
-	
+
 	public JTextField	textFieldBenutzer = null;
 	public JPasswordField  textFieldPasswort = null;
 	public JButton   buttonOK;
@@ -50,7 +50,7 @@ public class LoginPanel extends JPanel {
 	protected int usernumber = -1;
 
 
-	
+
 	public LoginPanel(JFrame mainFrame)
 	{
 		this.mainFrame = mainFrame;
@@ -65,7 +65,7 @@ public class LoginPanel extends JPanel {
 	{
 		initGUI();
 	}
-	
+
 	private void initGUI()
 	{
 		mainFrame = (JFrame)cookSwing.render("src/client/panel/ext/loginPanel.xml");
@@ -121,8 +121,8 @@ public class LoginPanel extends JPanel {
 	public MouseListener registierenListener = new MouseAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			//        	AnmeldePanel anmeldePanel	= new AnmeldePanel(mainFrame, DBConnection);
-			//        	anmeldePanel.init();
+			AnmeldePanel anmeldePanel	= new AnmeldePanel(mainFrame, bundle);
+			anmeldePanel.init();
 
 			System.out.println("Registieren!");
 
@@ -252,17 +252,17 @@ public class LoginPanel extends JPanel {
 		{
 			connectionStub = ServerSystemManager.getConnectionManager();
 		}
-			return connectionStub;
+		return connectionStub;
 	}
-	
+
 	protected DatenbankManager getDatenbankManager()
 	{
 		if (datenbankStub == null)
 		{
 			datenbankStub = ServerSystemManager.getDatenbankManager();
 		}
-			return datenbankStub;
+		return datenbankStub;
 	}
-	
+
 }
 

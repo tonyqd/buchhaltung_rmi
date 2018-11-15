@@ -5,6 +5,8 @@ import java.util.ResourceBundle;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import cookxml.cookswing.CookSwing;
 
@@ -19,20 +21,22 @@ public class AnmeldePanel extends JPanel{
 	private ResourceBundle bundle;
 	private CookSwing cookSwing;
 	
+	public JTextField	textFieldBenutzer = null;
+	public JPasswordField  textFieldPasswort1 = null;
+	public JPasswordField  textFieldPasswort2 = null;	
 	
 	
-	public AnmeldePanel(JFrame mainFrame)
+	public AnmeldePanel(JFrame mainFrame, ResourceBundle bundle)
 	{
 		this.mainFrame = mainFrame;
-		Locale de_DE = new Locale("de", "DE");
-		bundle = ResourceBundle.getBundle("bundles.buchhaltung", de_DE);
+		this.bundle = bundle;
 		cookSwing = new CookSwing(this);
 		cookSwing.setResourceBundle(bundle);
 	}
 	
 	public void init()
 	{
-		mainFrame = (JFrame)cookSwing.render("src/ext/anmeldePanel.xml");
+		mainFrame = (JFrame)cookSwing.render("src/client/panel/ext/anmeldePanel.xml");
 		mainFrame.setVisible(true);
 		mainFrame.setFocusable(true);
 //		mainFrame.addWindowListener(new MyWindowListener());
