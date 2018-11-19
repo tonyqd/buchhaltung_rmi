@@ -121,9 +121,13 @@ public class LoginPanel extends JPanel {
 	public MouseListener registierenListener = new MouseAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			AnmeldePanel anmeldePanel	= new AnmeldePanel(mainFrame, bundle);
+			
+//			mainFrame.setVisible(false);
+			mainFrame.setEnabled(false);
+			AnmeldePanel anmeldePanel	= new AnmeldePanel(bundle);
 			anmeldePanel.init();
-
+//			mainFrame.setEnabled(true);
+//			mainFrame.setVisible(true);
 			System.out.println("Registieren!");
 
 		}

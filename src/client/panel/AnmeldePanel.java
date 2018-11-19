@@ -26,9 +26,9 @@ public class AnmeldePanel extends JPanel{
 	public JPasswordField  textFieldPasswort2 = null;	
 	
 	
-	public AnmeldePanel(JFrame mainFrame, ResourceBundle bundle)
+	public AnmeldePanel(ResourceBundle bundle)
 	{
-		this.mainFrame = mainFrame;
+//		this.mainFrame = mainFrame;
 		this.bundle = bundle;
 		cookSwing = new CookSwing(this);
 		cookSwing.setResourceBundle(bundle);
