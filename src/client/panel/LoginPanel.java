@@ -86,14 +86,12 @@ public class LoginPanel extends JPanel {
 	}
 
 
-
-
 	// **************** Controller *******************************************// 
 	public ActionListener loginCloseAction = new ActionListener ()
 	{
 		public void actionPerformed (ActionEvent e)
 		{
-			final boolean leave = notifyForLeaving();
+			final boolean leave = notifyForLeaving(mainFrame, bundle,bundle.getString("LeavingMessage"));
 			if (leave)
 			{
 				mainFrame.dispose();
@@ -105,7 +103,7 @@ public class LoginPanel extends JPanel {
 	{
 		public void windowClosing (WindowEvent e)
 		{
-			final boolean leave = notifyForLeaving();
+			final boolean leave = notifyForLeaving(mainFrame, bundle,bundle.getString("LeavingMessage"));
 			if (leave)
 			{
 				mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -122,12 +120,7 @@ public class LoginPanel extends JPanel {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			
-//			mainFrame.setVisible(false);
-			mainFrame.setEnabled(false);
-			AnmeldePanel anmeldePanel	= new AnmeldePanel(bundle);
-			anmeldePanel.init();
-//			mainFrame.setEnabled(true);
-//			mainFrame.setVisible(true);
+			new RegistierenPanel(bundle, mainFrame);
 			System.out.println("Registieren!");
 
 		}
@@ -183,7 +176,7 @@ public class LoginPanel extends JPanel {
 	};
 
 
-	protected boolean notifyForLeaving()
+	protected static boolean notifyForLeaving(JFrame frame, ResourceBundle bundle, String LeavingMessage)
 	{
 		String titelStr = null;
 		String yesString = null;
@@ -191,12 +184,12 @@ public class LoginPanel extends JPanel {
 		String messageString = null;
 
 		titelStr = bundle.getString("Leavingtitle");
-		messageString = bundle.getString("LeavingMessage");
+		messageString = LeavingMessage;
 		yesString = bundle.getString("Ja");
 		noString = bundle.getString("Nein");
 
 		final Object[] options={yesString, noString};
-		final int n = JOptionPane.showOptionDialog(this, messageString, titelStr, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, 
+		final int n = JOptionPane.showOptionDialog(frame, messageString, titelStr, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, 
 				null,options, options[1]);
 
 		switch(n)
@@ -224,7 +217,7 @@ public class LoginPanel extends JPanel {
 
 		@Override
 		public void windowClosing(WindowEvent arg0) {
-			final boolean leave = notifyForLeaving();
+			final boolean leave = notifyForLeaving(mainFrame, bundle, bundle.getString("LeavingMessage"));
 			if (leave)
 			{
 				mainFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

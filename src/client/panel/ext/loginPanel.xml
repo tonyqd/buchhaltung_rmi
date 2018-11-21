@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<frame var="mainFrame" title="Anmelden" tag="frame" location="" windowlistener="frameListener"
+<frame var="mainFrame" title="@anmelden" tag="frame" location="300,300" windowlistener="frameListener"
 	minimumsize="300,200" preferredsize="300,200">
 	<panel var="loginPanel">
 		<borderlayout>
@@ -23,6 +23,8 @@
 						<idref ctor="gbcsSS" gridy="2" gridx="1"  weightx="10" anchor="LINE_END">
 							<label var="textRegistieren" text="@registieren"  mouselistener="registierenListener"/>
 						</idref>
+
+						
 					</gridbaglayout>
 				</panel>
 			</constraint>

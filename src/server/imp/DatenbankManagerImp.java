@@ -25,7 +25,52 @@ public class DatenbankManagerImp implements DatenbankManager{
 	public int userLogin(String username, String passwort) throws RemoteException{
 		return checkUserLogin(username, passwort);
 	}
+	
+	public int checkUserAvailable(String username) throws RemoteException{
+	    return checkUserAvailableImp(username);
+	    
+	}
+	
+	
+	private int checkUserAvailableImp(String username)
+	{
+		Statement statement = null;
+		String SQLStatement = null;
+		ResultSet resultSet = null;
+		int found = 0;
+		
+		try {
+			statement = conn.createStatement();
+			SQLStatement = "SELECT * FROM `user` WHERE `username` = '" + username + "' ;";
+			resultSet = statement.executeQuery(SQLStatement);
+			
+			while(resultSet.next())
+			{
+				found ++;
+			}
+			
+			if (resultSet != null) {
+				resultSet.close();
+			}
 
+			if (statement != null) {
+				statement.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		if (found == 0)
+		{
+			return -1;
+		}
+		else
+		{
+			return found;
+		}
+		
+		
+	}
 	
 	
 	

@@ -10,4 +10,6 @@ public interface DatenbankManager  extends Remote{
 
 	int userLogin(String username, String passwort) throws RemoteException;
 	
+	int checkUserAvailable(String username) throws RemoteException;
+	
 }
