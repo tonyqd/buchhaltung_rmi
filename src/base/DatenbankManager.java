@@ -12,4 +12,6 @@ public interface DatenbankManager  extends Remote{
 	
 	int checkUserAvailable(String username) throws RemoteException;
 	
+	int createUser(String username, String passwort) throws RemoteException;
+	
 }

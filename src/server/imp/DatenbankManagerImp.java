@@ -11,44 +11,96 @@ import base.DatenbankManager;
 
 
 public class DatenbankManagerImp implements DatenbankManager{
-	
+
 	private Connection conn = null;
 	public DatenbankManagerImp()
 	{
 		conn = connectDatenbankServer();
 	}
-	
+
 	public void printMsg() throws RemoteException {
 		System.out.println("Connection to Datenbank Server is established!");
 	}
-	
+
 	public int userLogin(String username, String passwort) throws RemoteException{
 		return checkUserLogin(username, passwort);
 	}
-	
+
 	public int checkUserAvailable(String username) throws RemoteException{
-	    return checkUserAvailableImp(username);
-	    
+		return checkUserAvailableImp(username);
+
 	}
-	
-	
+
+	public int createUser(String username, String passwort) throws RemoteException{
+		return createNewUser(username, passwort);
+	}
+
+	private int createNewUser(String username, String passwort)
+	{
+		int usernumber = 0;
+		Statement statement = null;
+		String SQLStatement = null;
+		ResultSet resultSet = null;
+		int returncode = 0;
+
+
+		try {
+			statement = conn.createStatement();
+			SQLStatement = "SELECT MAX(usernumber) FROM user ";
+			resultSet = statement.executeQuery(SQLStatement);
+
+			while(resultSet.next())
+			{
+				usernumber = resultSet.getInt(1);
+			}
+
+			if (resultSet != null) {
+				resultSet.close();
+			}
+
+			if (statement != null) {
+				statement.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+				usernumber ++;
+
+		try {
+			statement = conn.createStatement();
+			SQLStatement = "INSERT INTO `user`  (`usernumber`, `username`, `passwort`, `berechtigung`) VALUES (" +  
+					usernumber + ", \""+ username + "\", \""+ passwort + "\", 1 );";
+			System.out.println(SQLStatement.toString());
+			returncode = statement.executeUpdate(SQLStatement);
+
+			if (statement != null) {
+				statement.close();
+			}
+		} catch (SQLException e) {
+			return -1;
+		}
+
+		return returncode;
+	}
+
 	private int checkUserAvailableImp(String username)
 	{
 		Statement statement = null;
 		String SQLStatement = null;
 		ResultSet resultSet = null;
 		int found = 0;
-		
+
 		try {
 			statement = conn.createStatement();
 			SQLStatement = "SELECT * FROM `user` WHERE `username` = '" + username + "' ;";
 			resultSet = statement.executeQuery(SQLStatement);
-			
+
 			while(resultSet.next())
 			{
 				found ++;
 			}
-			
+
 			if (resultSet != null) {
 				resultSet.close();
 			}
@@ -68,12 +120,12 @@ public class DatenbankManagerImp implements DatenbankManager{
 		{
 			return found;
 		}
-		
-		
+
+
 	}
-	
-	
-	
+
+
+
 	private int checkUserLogin(String username, String passwort)
 	{
 		Statement statement = null;
@@ -81,19 +133,19 @@ public class DatenbankManagerImp implements DatenbankManager{
 		ResultSet resultSet = null;
 		int usernumber= -1;
 		int found = 0;
-		
+
 		try {
 			statement = conn.createStatement();
 			SQLStatement = "SELECT * FROM `user` WHERE `username` = '" + username + "' AND `passwort` = '" + passwort + "' ;";
 			resultSet = statement.executeQuery(SQLStatement);
-			
+
 			while(resultSet.next())
 			{
 				found ++;
 				usernumber = resultSet.getInt("usernumber");
 			}
-			
-			
+
+
 			if (resultSet != null) {
 				resultSet.close();
 			}
@@ -113,10 +165,10 @@ public class DatenbankManagerImp implements DatenbankManager{
 		{
 			return -1;
 		}
-		
-		
+
+
 	}
-	
+
 	private Connection connectDatenbankServer()
 	{
 		Connection conn = null;
@@ -145,5 +197,5 @@ public class DatenbankManagerImp implements DatenbankManager{
 		}
 		return conn;
 	}
-	
+
 }

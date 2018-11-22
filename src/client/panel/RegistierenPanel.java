@@ -11,13 +11,18 @@ import java.awt.event.WindowListener;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
+import base.IconStore;
 import client.manager.ServerSystemManager;
 import cookxml.cookswing.CookSwing;
 
@@ -37,7 +42,12 @@ public class RegistierenPanel extends JPanel{
 	public JPasswordField  textFieldPasswort1 = null;
 	public JPasswordField  textFieldPasswort2 = null;	
 	public JLabel       textFieldBenutzerHinweis = null;
-
+	public JLabel       benutzerIcon = null; 
+	public JLabel       passwordIcon = null; 
+	public JButton   buttonOK;
+	public JButton   buttonAbrechen;
+	private boolean usernameOk = false;
+	private boolean passwordOk = false;
 
 	public RegistierenPanel(ResourceBundle bundle, JFrame parent)
 	{
@@ -109,6 +119,7 @@ public class RegistierenPanel extends JPanel{
 			if (password.length == 0)
 			{
 				textFieldBenutzerHinweis.setText("Passwort darf nicht leer sein!" );
+				passwordOk = false;
 			}
 		}
 	};
@@ -121,6 +132,7 @@ public class RegistierenPanel extends JPanel{
 			if (textFieldPasswort2.getPassword().length == 0)
 			{
 				textFieldBenutzerHinweis.setText("Passwort darf nicht leer sein!" );
+				passwordOk = false;
 				return;
 			}
 
@@ -137,11 +149,19 @@ public class RegistierenPanel extends JPanel{
 			
 			if (pass1.equals(pass2))
 			{
-				textFieldBenutzerHinweis.setText("ok!" );
+				passwordIcon.setIcon(IconStore.getokButton());
+				passwordOk= true;
+				textFieldBenutzerHinweis.setText("");
+				if (usernameOk)
+				{
+					buttonOK.setEnabled(true);
+				}
 			}
 			else
 			{
 				textFieldBenutzerHinweis.setText("Passworts sind nicht identisch!" );
+				passwordIcon.setIcon(IconStore.getabrechenButton());
+				passwordOk = false;
 			}
 		}
 	};
@@ -151,7 +171,15 @@ public class RegistierenPanel extends JPanel{
 		public void focusLost(FocusEvent e) {
 			int return_value = 0;
 			System.out.println("User entered " + textFieldBenutzer.getText());
-
+			
+			if (textFieldBenutzer.getText().length() == 0)
+			{
+				textFieldBenutzerHinweis.setText("Username darf nicht leer sein!");
+				benutzerIcon.setIcon(IconStore.getabrechenButton());
+				usernameOk = false;
+				return;
+			}
+			
 			try {
 				return_value = ServerSystemManager.getDatenbankManager().checkUserAvailable(textFieldBenutzer.getText());
 			} catch (RemoteException e1) {
@@ -161,14 +189,67 @@ public class RegistierenPanel extends JPanel{
 			if (return_value < 0)
 			{
 				textFieldBenutzerHinweis.setText("Username: " + textFieldBenutzer.getText() + " ist verfügbar!");
+				benutzerIcon.setIcon(IconStore.getokButton());
+				usernameOk = true;
+				if (passwordOk)
+				{
+					buttonOK.setEnabled(true);
+				}
 			}
 			else
 			{
-				textFieldBenutzerHinweis.setText("Username: " + textFieldBenutzer.getText() + " ist leider nicht mehr verfügbar!");
+				textFieldBenutzerHinweis.setText("Username: " + textFieldBenutzer.getText() + " ist nicht verfügbar!");
+				benutzerIcon.setIcon(IconStore.getabrechenButton());
+				usernameOk = false;
 			}
+		}
+		
+		public void focusGained(FocusEvent e) {
+			textFieldBenutzerHinweis.setText("");
+			benutzerIcon.setIcon(null);
+			usernameOk = false;
 		}
 	};
 
+	public ActionListener OkAction = new ActionListener ()
+	{
+		public void actionPerformed (ActionEvent e)
+		{
+			char[] passwort =  textFieldPasswort2.getPassword();
+			int usernumber = -1;
+			String benutzerString = textFieldBenutzer.getText();
+			String passwortString = "";
+
+			// Wenn Benutzername und Passwort eingegeben sind
+			for(int i = 0; i < passwort.length; i++)
+			{
+				passwortString = passwortString + passwort[i];
+			}
+			try {
+				usernumber = ServerSystemManager.getDatenbankManager().createUser(benutzerString, passwortString);
+				System.out.println("usernumber: " + usernumber);
+			} catch (RemoteException e1) {
+				System.out.println("Datenbank connection error!");
+			} 
+
+			if (usernumber == 1)
+			{
+				JOptionPane.showMessageDialog(registierenPanelFrame, "successful!");
+				textFieldBenutzerHinweis.setText("");
+				registierenPanelFrame.dispose();
+				parentFrame.setFocusable(true);
+				parentFrame.setVisible(true);
+				parentFrame.setEnabled(true);
+				return;
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(registierenPanelFrame, "Failed!");
+			}
+			return;
+		}
+	};
+	
 
 
 
