@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import base.DatenbankManager;
+import base.User;
 
 
 public class DatenbankManagerImp implements DatenbankManager{
@@ -34,6 +35,57 @@ public class DatenbankManagerImp implements DatenbankManager{
 	public int createUser(String username, String passwort) throws RemoteException{
 		return createNewUser(username, passwort);
 	}
+	
+	public User getUser(int userid) throws RemoteException{
+		return getUserObject(userid);
+	}
+	
+	
+	private User getUserObject(int userid)
+	{
+		User userobject = null;
+		Statement statement = null;
+		String SQLStatement = null;
+		ResultSet resultSet = null;
+	    String username;
+		String vorname;
+		String nachname;
+		
+		try {
+			statement = conn.createStatement();
+			SQLStatement = "SELECT * FROM `user` WHERE `usernumber` = " + userid + " ;";
+			resultSet = statement.executeQuery(SQLStatement);
+
+			while(resultSet.next())
+			{
+				username = resultSet.getString("USERNAME");
+				vorname  = resultSet.getString("VORNAME");
+				nachname = resultSet.getString("NACHNAME");
+				userobject = new User(userid, username, vorname, nachname);
+			}
+
+			if (resultSet != null) {
+				resultSet.close();
+			}
+
+			if (statement != null) {
+				statement.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return userobject;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 	private int createNewUser(String username, String passwort)
 	{
@@ -69,8 +121,8 @@ public class DatenbankManagerImp implements DatenbankManager{
 
 		try {
 			statement = conn.createStatement();
-			SQLStatement = "INSERT INTO `user`  (`usernumber`, `username`, `passwort`, `berechtigung`) VALUES (" +  
-					usernumber + ", \""+ username + "\", \""+ passwort + "\", 1 );";
+			SQLStatement = "INSERT INTO `user`  (`usernumber`, `username`, `passwort`, `berechtigung`, `Vorname`, `Nachname`, `Geschlecht`) VALUES (" +  
+					usernumber + ", \""+ username + "\", \""+ passwort + "\", 1, \"Test\", \"Test\", 1 );";
 			System.out.println(SQLStatement.toString());
 			returncode = statement.executeUpdate(SQLStatement);
 
@@ -189,7 +241,6 @@ public class DatenbankManagerImp implements DatenbankManager{
 			String password = "buchhaltung";
 
 			conn = DriverManager.getConnection (url, username, password);
-			System.out.println ("Database connection established!");
 		}
 		catch (Exception e)
 		{

@@ -20,7 +20,7 @@
 						</idref>
 						<idref ctor="gbcsSS" gridy="0" gridx="1" weightx="10">
 							<textfield var="textFieldBenutzer" actionlistener="OkAction"
-								focuslistener="checkUserNameAvailable" />
+								focuslistener="checkUserNameAvailable" documentlistener="documentListener" />
 						</idref>
 						<idref ctor="gbcsSS" gridy="1" gridx="1" weightx="10">
 							<passwordfield var="textFieldPasswort1"

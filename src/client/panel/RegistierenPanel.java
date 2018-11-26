@@ -11,8 +11,6 @@ import java.awt.event.WindowListener;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -21,6 +19,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import base.IconStore;
 import client.manager.ServerSystemManager;
@@ -69,6 +69,7 @@ public class RegistierenPanel extends JPanel{
 		registierenPanelFrame = (JFrame)cookSwing.render("src/client/panel/ext/registierenPanel.xml");
 		registierenPanelFrame.setVisible(true);
 		registierenPanelFrame.setFocusable(true);
+		textFieldBenutzer.getDocument().addDocumentListener(documentListener);
 	}	
 
 
@@ -166,6 +167,58 @@ public class RegistierenPanel extends JPanel{
 		}
 	};
 
+	public DocumentListener documentListener = new DocumentListener() {
+	      public void changedUpdate(DocumentEvent documentEvent) {
+	    	  check();
+	      }
+	      public void insertUpdate(DocumentEvent documentEvent) {
+	    	  check();
+	      }
+	      public void removeUpdate(DocumentEvent documentEvent) {
+	    	  check();
+	      }
+	      
+	      private void check()
+	      {
+	    	  int return_value = 0;
+				
+				if (textFieldBenutzer.getText().length() == 0)
+				{
+					textFieldBenutzerHinweis.setText("Username darf nicht leer sein!");
+					benutzerIcon.setIcon(IconStore.getabrechenButton());
+					usernameOk = false;
+					return;
+				}
+				
+				try {
+					return_value = ServerSystemManager.getDatenbankManager().checkUserAvailable(textFieldBenutzer.getText());
+				} catch (RemoteException e1) {
+					System.err.println("ServerSystemManager.getDatenbankManager().checkUserAvailable error!");
+				}
+
+				if (return_value < 0)
+				{
+					textFieldBenutzerHinweis.setText("Username: " + textFieldBenutzer.getText() + " ist verfügbar!");
+					benutzerIcon.setIcon(IconStore.getokButton());
+					usernameOk = true;
+					if (passwordOk)
+					{
+						buttonOK.setEnabled(true);
+					}
+				}
+				else
+				{
+					textFieldBenutzerHinweis.setText("Username: " + textFieldBenutzer.getText() + " ist nicht verfügbar!");
+					benutzerIcon.setIcon(IconStore.getabrechenButton());
+//					textFieldBenutzer.grabFocus();
+					textFieldBenutzer.selectAll();
+					usernameOk = false;
+				}
+	      }
+	    };
+
+
+	
 	public FocusListener checkUserNameAvailable = new FocusAdapter() 
 	{
 		public void focusLost(FocusEvent e) {
@@ -200,6 +253,8 @@ public class RegistierenPanel extends JPanel{
 			{
 				textFieldBenutzerHinweis.setText("Username: " + textFieldBenutzer.getText() + " ist nicht verfügbar!");
 				benutzerIcon.setIcon(IconStore.getabrechenButton());
+//				textFieldBenutzer.grabFocus();
+				textFieldBenutzer.selectAll();
 				usernameOk = false;
 			}
 		}

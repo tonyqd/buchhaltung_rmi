@@ -168,7 +168,7 @@ public class LoginPanel extends JPanel {
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(mainFrame, "successful!");
+				new MenuePanel(bundle, mainFrame, usernumber);
 				mainFrame.dispose();
 			}
 			return;

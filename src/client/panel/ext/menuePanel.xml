@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frame var="RegistierenPanelFrame" title="@registieren" tag="frame"
+	locationrelativeto="null" windowlistener="frameListener" minimumsize="350,200"
+	preferredsize="350,200">
+	<panel var="registierenPanel">
+		<borderlayout>
+			<constraint location="North">
+				<panel>
+					<label var="WelcomeText" anchor="WEST" />
+				</panel>
+			</constraint>
+			<constraint location="Center">
+				<panel>
+					<gridbaglayout>
+						<gridbagconstraints id="gbcsSS" weightx="1"
+							weighty="0" anchor="WEST" fill="HORIZONTAL" insets="2,2,2,2" />
+						<idref ctor="gbcsSS" gridy="0" gridx="0" weightx="2">
+							<button var="buttonOK" text="@BuchungAdd" icon="@EintragHinzufuegenButton"
+								enabled="true" preferredsize="200,200" actionlistener="OkAction" />
+						</idref>
+						<idref ctor="gbcsSS" gridy="1" gridx="0" weightx="2">
+							<button var="buttonOK" text="@BuchungAdd" icon="@EintragHinzufuegenButton"
+								enabled="false" preferredsize="200,200" actionlistener="OkAction" />
+						</idref>
+						<idref ctor="gbcsSS" gridy="0" gridx="1" weightx="2">
+							<button var="buttonOK" text="@BuchungAdd" icon="@EintragHinzufuegenButton"
+								enabled="false" preferredsize="200,200" actionlistener="OkAction" />
+						</idref>
+						
+					</gridbaglayout>
+				</panel>
+			</constraint>
+			<constraint location="South">
+				<panel>
+					<button var="buttonOK" text="OK" icon="@okButton" enabled="false"
+						preferredsize="120,25" minimumsize="120,25" actionlistener="OkAction" />
+					<button var="buttonAbrechen" icon="@abrechenButton" text="Abrechen"
+						preferredsize="120,25" minimumsize="120,25" actionlistener="CloseAction" />
+				</panel>
+			</constraint>
+		</borderlayout>
+
+	</panel>
+</frame>
