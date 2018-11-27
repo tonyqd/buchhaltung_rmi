@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <frame var="RegistierenPanelFrame" title="@registieren" tag="frame"
-	locationrelativeto="null" windowlistener="frameListener" minimumsize="350,200"
-	preferredsize="350,200">
+	locationrelativeto="null" windowlistener="frameListener" minimumsize="350,250"
+	preferredsize="350,250">
 	<panel var="registierenPanel">
 		<borderlayout>
 			<constraint location="Center">
@@ -18,9 +18,18 @@
 						<idref ctor="gbcsSS" gridy="2" gridx="0" weightx="2">
 							<label text="@kennwort" />
 						</idref>
+						<idref ctor="gbcsSS" gridy="3" gridx="0" weightx="2">
+							<label text="@vorname" />
+						</idref>
+						<idref ctor="gbcsSS" gridy="4" gridx="0" weightx="2">
+							<label text="@nachname" />
+						</idref>
+						<idref ctor="gbcsSS" gridy="5" gridx="0" weightx="2">
+							<label text="@geschlecht" />
+						</idref>
 						<idref ctor="gbcsSS" gridy="0" gridx="1" weightx="10">
 							<textfield var="textFieldBenutzer" actionlistener="OkAction"
-								focuslistener="checkUserNameAvailable" documentlistener="documentListener" />
+								focuslistener="checkUserNameAvailable" />
 						</idref>
 						<idref ctor="gbcsSS" gridy="1" gridx="1" weightx="10">
 							<passwordfield var="textFieldPasswort1"
@@ -31,21 +40,42 @@
 								actionlistener="OkAction" focuslistener="checktextFieldPasswort2" />
 						</idref>
 						<idref ctor="gbcsSS" gridy="3" gridx="1" weightx="10">
+							<textfield var="textFieldVorname" focuslistener="checkVorname" />
+						</idref>
+						<idref ctor="gbcsSS" gridy="4" gridx="1" weightx="10">
+							<textfield var="textFieldNachname" focuslistener="checkNachname" />
+						</idref>
+						<idref ctor="gbcsSS" gridy="5" gridx="1" weightx="10">
+							<panel>
+									<radiobutton var="radioButtonMaennlich" actionlistener="selectMan"
+										label="@maennlich" selected="true"  />
+									<radiobutton var="radioButtonWeiblich" actionlistener="selectFrau"
+										label="@weiblich" />
+							</panel>
+						</idref>
+
+						<idref ctor="gbcsSS" gridy="6" gridx="1" weightx="10">
 							<label var="textFieldBenutzerHinweis" />
 						</idref>
 						<idref ctor="gbcsSS" gridy="0" gridx="2" weightx="0.5">
-							<label var="benutzerIcon"   maximumsize="@iconSize" />
+							<label var="benutzerIcon" maximumsize="@iconSize" />
 						</idref>
 						<idref ctor="gbcsSS" gridy="2" gridx="2" weightx="0.5">
-							<label var="passwordIcon"  maximumsize="@iconSize" />
+							<label var="passwordIcon" maximumsize="@iconSize" />
+						</idref>
+						<idref ctor="gbcsSS" gridy="3" gridx="2" weightx="0.5">
+							<label var="vornameIcon" maximumsize="@iconSize" />
+						</idref>
+						<idref ctor="gbcsSS" gridy="4" gridx="2" weightx="0.5">
+							<label var="nachnameIcon" maximumsize="@iconSize" />
 						</idref>
 					</gridbaglayout>
 				</panel>
 			</constraint>
 			<constraint location="South">
 				<panel>
-					<button var="buttonOK" text="OK" icon="@okButton"
-						enabled="false" preferredsize="120,25" minimumsize="120,25" actionlistener="OkAction" />
+					<button var="buttonOK" text="OK" icon="@okButton" enabled="false"
+						preferredsize="120,25" minimumsize="120,25" actionlistener="OkAction" />
 					<button var="buttonAbrechen" icon="@abrechenButton" text="Abrechen"
 						preferredsize="120,25" minimumsize="120,25" actionlistener="CloseAction" />
 				</panel>

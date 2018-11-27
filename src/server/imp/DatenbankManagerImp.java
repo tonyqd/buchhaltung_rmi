@@ -32,8 +32,9 @@ public class DatenbankManagerImp implements DatenbankManager{
 
 	}
 
-	public int createUser(String username, String passwort) throws RemoteException{
-		return createNewUser(username, passwort);
+	public int createUser(String username, String passwort, String vorname, String nachname, int Geschlecht) 
+			throws RemoteException{
+		return createNewUser(username, passwort, vorname, nachname, Geschlecht);
 	}
 	
 	public User getUser(int userid) throws RemoteException{
@@ -87,7 +88,7 @@ public class DatenbankManagerImp implements DatenbankManager{
 	
 	
 
-	private int createNewUser(String username, String passwort)
+	private int createNewUser(String username, String passwort, String vorname, String nachname, int Geschlecht)
 	{
 		int usernumber = 0;
 		Statement statement = null;
@@ -122,7 +123,7 @@ public class DatenbankManagerImp implements DatenbankManager{
 		try {
 			statement = conn.createStatement();
 			SQLStatement = "INSERT INTO `user`  (`usernumber`, `username`, `passwort`, `berechtigung`, `Vorname`, `Nachname`, `Geschlecht`) VALUES (" +  
-					usernumber + ", \""+ username + "\", \""+ passwort + "\", 1, \"Test\", \"Test\", 1 );";
+					usernumber + ", \""+ username + "\", \""+ passwort + "\", 1, \""+ vorname + "\", \""+ nachname +"\", "+Geschlecht+" );";
 			System.out.println(SQLStatement.toString());
 			returncode = statement.executeUpdate(SQLStatement);
 

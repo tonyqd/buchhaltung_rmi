@@ -12,7 +12,7 @@ public interface DatenbankManager  extends Remote{
 	
 	int checkUserAvailable(String username) throws RemoteException;
 	
-	int createUser(String username, String passwort) throws RemoteException;
+	int createUser(String username, String passwort, String vorname, String nachname, int Geschlecht) throws RemoteException;
 	
 	User getUser(int userid) throws RemoteException;
 }
