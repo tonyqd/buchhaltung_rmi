@@ -1,11 +1,16 @@
 package client.panel;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.rmi.RemoteException;
 import java.util.ResourceBundle;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import base.User;
 import client.manager.ServerSystemManager;
@@ -27,6 +32,9 @@ public class MenuePanel extends JPanel {
 	
 	public JLabel WelcomeText = null;
 	
+	public JButton   buttonNeueBuchung;
+	public JButton   buttonKontos;
+	public JButton   buttonalleBuchungen;
 	
 	public MenuePanel(ResourceBundle bundle, JFrame parent, int userid)
 	{
@@ -60,5 +68,28 @@ public class MenuePanel extends JPanel {
 		WelcomeText.setText("Willkommen Herr " + userObject.getNachname() + "!");
 		
 	}	
+	
+	
+	
+	
+	
+	//Controller
+	public WindowListener frameListener = new WindowAdapter ()
+	{
+		public void windowClosing (WindowEvent e)
+		{
+			final boolean leave = LoginPanel.notifyForLeaving(menuePanelFrame, bundle,bundle.getString("LeavingMessage"));
+			if (leave)
+			{
+				menuePanelFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+				menuePanelFrame.dispose();
+			}
+			else
+			{
+				menuePanelFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+			}
+		}
+	};
+	
 	
 }
