@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<frame var="buchungPanelFrame" title="@buchungen" tag="frame"
+	locationrelativeto="null" windowlistener="frameListener" minimumsize="700,1000"
+	preferredsize="700,1000">
+	<panel var="buchungPanel">
+		<borderlayout>
+			<constraint location="North">
+				<panel>
+					<label text="WelcomeText" anchor="WEST" />
+				</panel>
+			</constraint>
+			<constraint location="Center">
+				<panel var="buchungInnerPanel">
+					<borderlayout>
+						<constraint location="North">
+							<panel>
+								<gridbaglayout>
+									<gridbagconstraints id="gbcsSS" weightx="1"
+										weighty="0" anchor="WEST" fill="HORIZONTAL" insets="2,2,2,2" />
+									<idref ctor="gbcsSS" gridy="0" gridx="1" weightx="2">
+										<button var="buttonalleBuchungen" text="@AlleBuchungen"
+											icon="@BuchungenButton" enabled="true" preferredsize="300,300"
+											actionlistener="OkAction" />
+									</idref>
+								</gridbaglayout>
+							</panel>
+						</constraint>
+						<constraint location="Center">
+							<panel>
+								<gridbaglayout>
+									<gridbagconstraints id="gbcsSS" weightx="1"
+										weighty="0" anchor="WEST" fill="HORIZONTAL" insets="2,2,2,2" />
+									<idref ctor="gbcsSS" gridy="0" gridx="0" weightx="2">
+										<button var="buttonNeueBuchung" text="@BuchungAdd"
+											icon="@EintragHinzufuegenButton" enabled="true"
+											preferredsize="300,300" actionlistener="OkAction" />
+									</idref>
+									<idref ctor="gbcsSS" gridy="1" gridx="0" weightx="2">
+										<button var="buttonKontos" text="@KontoAuszug" icon="@KontoButton"
+											enabled="true" preferredsize="300,300" actionlistener="OkAction" />
+									</idref>
+									<idref ctor="gbcsSS" gridy="0" gridx="1" weightx="2">
+										<button var="buttonalleBuchungen" text="@AlleBuchungen"
+											icon="@BuchungenButton" enabled="true" preferredsize="300,300"
+											actionlistener="OkAction" />
+									</idref>
+								</gridbaglayout>
+							</panel>
+						</constraint>
+						<constraint location="West">
+							<panel>
+								<label text="WelcomeText" anchor="WEST" />
+							</panel>
+						</constraint>
+					</borderlayout>
+				</panel>
+			</constraint>
+			<constraint location="South">
+
+				<panel>
+				</panel>
+			</constraint>
+		</borderlayout>
+	</panel>
+</frame>

@@ -45,7 +45,7 @@ public class ServerStarter extends RMIStarter {
 				ConnectionManager connection = new ConnectionManagerImp();
 				ConnectionManager connectionStub = (ConnectionManager)UnicastRemoteObject.exportObject(connection, 0);
 				registry.rebind(ConnectionManager.SERVICE_NAME, connectionStub);
-				System.out.println("Registered: " + ConnectionManager.SERVICE_NAME + " -> " + connectionStub.getClass().getName() + 
+				System.out.println("ReRegistered: " + ConnectionManager.SERVICE_NAME + " -> " + connectionStub.getClass().getName() + 
 						"[" +connectionStub + "]");
 			}
 			catch(Exception e1)
@@ -55,7 +55,7 @@ public class ServerStarter extends RMIStarter {
 		}
 		catch(AlreadyBoundException e)
 		{
-			System.out.println("registry bind error!");
+			System.err.println("registry bind error!");
 		}
 
 		// DatenbankManager
@@ -73,7 +73,7 @@ public class ServerStarter extends RMIStarter {
 			DatenbankManager datenbankStub = (DatenbankManager)UnicastRemoteObject.exportObject(datenbank, 0);
 			registry = LocateRegistry.getRegistry(port);
 			registry.rebind(DatenbankManager.SERVICE_NAME, datenbankStub);
-			System.out.println("Registered: " + DatenbankManager.SERVICE_NAME + " -> " + datenbankStub.getClass().getName() + 
+			System.out.println("ReRegistered: " + DatenbankManager.SERVICE_NAME + " -> " + datenbankStub.getClass().getName() + 
 					"[" +datenbankStub + "]");
 			}
 			catch(Exception e1)
@@ -81,7 +81,8 @@ public class ServerStarter extends RMIStarter {
 				e1.printStackTrace();
 			}
 		}
-
+		
+		System.out.println("Server Started Successfully!");
 
 	}
 

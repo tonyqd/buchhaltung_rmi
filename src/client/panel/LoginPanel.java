@@ -28,7 +28,7 @@ import base.DatenbankManager;
 import client.manager.ServerSystemManager;
 import cookxml.cookswing.CookSwing;
 
-public class LoginPanel extends JPanel {
+public class LoginPanel extends TemplatePanel {
 
 	/**
 	 * 
@@ -45,8 +45,6 @@ public class LoginPanel extends JPanel {
 	public JButton   buttonAbrechen;
 	public JLabel    textRegistieren;
 
-	protected DatenbankManager datenbankStub = null; 
-	protected ConnectionManager connectionStub = null;
 	protected int usernumber = -1;
 
 
@@ -119,10 +117,7 @@ public class LoginPanel extends JPanel {
 	public MouseListener registierenListener = new MouseAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			
 			new RegistierenPanel(bundle, mainFrame);
-			System.out.println("Registieren!");
-
 		}
 	};
 
@@ -175,36 +170,6 @@ public class LoginPanel extends JPanel {
 		}
 	};
 
-
-	protected static boolean notifyForLeaving(JFrame frame, ResourceBundle bundle, String LeavingMessage)
-	{
-		String titelStr = null;
-		String yesString = null;
-		String noString = null;
-		String messageString = null;
-
-		titelStr = bundle.getString("Leavingtitle");
-		messageString = LeavingMessage;
-		yesString = bundle.getString("Ja");
-		noString = bundle.getString("Nein");
-
-		final Object[] options={yesString, noString};
-		final int n = JOptionPane.showOptionDialog(frame, messageString, titelStr, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, 
-				null,options, options[1]);
-
-		switch(n)
-		{
-		case JOptionPane.YES_OPTION: 
-			return true;
-		case JOptionPane.NO_OPTION:
-			return false;
-		case JOptionPane.CLOSED_OPTION:
-			return false;	
-		}
-
-		return false;
-	}
-
 	class MyWindowListener implements WindowListener {
 
 		@Override
@@ -241,24 +206,6 @@ public class LoginPanel extends JPanel {
 		@Override
 		public void windowOpened(WindowEvent arg0) {}
 
-	}
-
-	protected ConnectionManager getConnectionManager()
-	{
-		if (connectionStub == null)
-		{
-			connectionStub = ServerSystemManager.getConnectionManager();
-		}
-		return connectionStub;
-	}
-
-	protected DatenbankManager getDatenbankManager()
-	{
-		if (datenbankStub == null)
-		{
-			datenbankStub = ServerSystemManager.getDatenbankManager();
-		}
-		return datenbankStub;
 	}
 
 }

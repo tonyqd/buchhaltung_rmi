@@ -29,7 +29,7 @@ import cookxml.cookswing.CookSwing;
 
 
 
-public class RegistierenPanel extends JPanel{
+public class RegistierenPanel extends TemplatePanel{
 	/**
 	 * 
 	 */
@@ -90,7 +90,7 @@ public class RegistierenPanel extends JPanel{
 	{
 		public void actionPerformed (ActionEvent e)
 		{
-			final boolean leave = LoginPanel.notifyForLeaving(registierenPanelFrame, bundle, bundle.getString("AnmeldungLeavingMessage"));
+			final boolean leave = notifyForLeaving(registierenPanelFrame, bundle, bundle.getString("AnmeldungLeavingMessage"));
 			if (leave)
 			{
 				registierenPanelFrame.dispose();
@@ -123,7 +123,7 @@ public class RegistierenPanel extends JPanel{
 	{
 		public void windowClosing (WindowEvent e)
 		{
-			final boolean leave = LoginPanel.notifyForLeaving(registierenPanelFrame, bundle,bundle.getString("AnmeldungLeavingMessage"));
+			final boolean leave = notifyForLeaving(registierenPanelFrame, bundle,bundle.getString("AnmeldungLeavingMessage"));
 			if (leave)
 			{
 				registierenPanelFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
