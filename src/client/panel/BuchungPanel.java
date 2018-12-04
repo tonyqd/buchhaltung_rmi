@@ -1,19 +1,28 @@
 package client.panel;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.rmi.RemoteException;
+import java.text.DateFormat;
+import java.text.Format;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ResourceBundle;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 
-import base.User;
-import client.manager.ServerSystemManager;
+import base.BuchungType;
+import base.Konto;
 import cookxml.cookswing.CookSwing;
 
 public class BuchungPanel extends TemplatePanel {
@@ -31,10 +40,13 @@ public class BuchungPanel extends TemplatePanel {
 	public JPanel buchungPanel = null;
 	public JPanel buchungInnerPanel = null;
 	
-	
-	public JButton   buttonNeueBuchung;
-	public JButton   buttonKontos;
-	public JButton   buttonalleBuchungen;
+	public JComboBox<String> comboboxBuchungtypen;
+	public JComboBox<String> comboboxKonto;
+	public JButton   buttonBuchungSpeichern;
+	public JButton   buttonBuchungAbrechen;
+	public JFormattedTextField textFieldDatum = null;
+	public JFormattedTextField textFieldUhrzeit = null;
+	public JFormattedTextField textfieldBetrag = null;
 	
 	public BuchungPanel(ResourceBundle bundle, JFrame parent)
 	{
@@ -47,21 +59,29 @@ public class BuchungPanel extends TemplatePanel {
 	
 	public void init()
 	{
-		//Get UserObject
 		initGUI();
-		
-		
 	}
 
 	private void initGUI()
 	{
 		parentFrame.setEnabled(true);
+		NumberFormat percentFormat = NumberFormat.getNumberInstance();
+		percentFormat.setMinimumFractionDigits(2);
+		textfieldBetrag = new JFormattedTextField(percentFormat);
+		
+		DateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		textFieldDatum = new JFormattedTextField(format);
+		
+		Format timeFormat = new SimpleDateFormat("HH:mm");
+		textFieldUhrzeit = new JFormattedTextField(timeFormat);
+		
 		buchungPanelFrame = (JFrame)cookSwing.render("src/client/panel/ext/buchungPanel.xml");
 		buchungPanelFrame.setVisible(true);
 		buchungPanelFrame.setFocusable(true);
+
+		initComboboxBuchungstypen();
+		initComboboxKonto();
 	}	
-	
-	
 	
 	//Controller
 	public WindowListener frameListener = new WindowAdapter ()
@@ -80,6 +100,33 @@ public class BuchungPanel extends TemplatePanel {
 			}
 		}
 	};
+	
+	public ActionListener AbrechenAction = new ActionListener ()
+	{
+		public void actionPerformed (ActionEvent e)
+		{
+			textfieldBetrag.setText("");
+			textFieldDatum.setText("");
+			textFieldUhrzeit.setText("");
+		}
+	};
+	
+	
+	private void initComboboxBuchungstypen()
+	{
+		for(BuchungType temp : getBuchungTypen())
+		{
+			comboboxBuchungtypen.addItem(temp.getBuchungname());
+		}
+	}
+	
+	private void initComboboxKonto()
+	{
+		for(Konto temp : getKontonamen())
+		{
+			comboboxKonto.addItem(temp.getKontoname());
+		}
+	}
 	
 	
 }

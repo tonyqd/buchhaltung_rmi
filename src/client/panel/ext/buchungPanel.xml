@@ -6,7 +6,8 @@
 		<borderlayout>
 			<constraint location="North">
 				<panel>
-					<label text="WelcomeText" anchor="WEST" />
+					<label text="MenuBar!!   " anchor="WEST" />
+
 				</panel>
 			</constraint>
 			<constraint location="Center">
@@ -14,15 +15,56 @@
 					<borderlayout>
 						<constraint location="North">
 							<panel>
-								<gridbaglayout>
-									<gridbagconstraints id="gbcsSS" weightx="1"
-										weighty="0" anchor="WEST" fill="HORIZONTAL" insets="2,2,2,2" />
-									<idref ctor="gbcsSS" gridy="0" gridx="1" weightx="2">
-										<button var="buttonalleBuchungen" text="@AlleBuchungen"
-											icon="@BuchungenButton" enabled="true" preferredsize="300,300"
-											actionlistener="OkAction" />
-									</idref>
-								</gridbaglayout>
+								<borderlayout>
+									<constraint location="Center">
+										<panel>
+											<gridbaglayout>
+												<gridbagconstraints id="gbcsSS" weightx="1"
+													weighty="0" anchor="WEST" fill="HORIZONTAL" insets="2,2,2,2" />
+												<idref ctor="gbcsSS" gridy="0" gridx="0" weightx="2">
+													<label text="@Buchungtypen" minimumsize="@labelSize" />
+												</idref>
+												<idref ctor="gbcsSS" gridy="0" gridx="1" weightx="5">
+													<combobox var="comboboxBuchungtypen"
+														preferredsize="75,22" actionlistener="abreartAction" />
+												</idref>
+												<idref ctor="gbcsSS" gridy="0" gridx="2" weightx="2">
+													<label text="@Konto" minimumsize="@labelSize" />
+												</idref>
+												<idref ctor="gbcsSS" gridy="0" gridx="3" weightx="5">
+													<combobox var="comboboxKonto" preferredsize="75,22"
+														actionlistener="abreartAction" />
+												</idref>
+												<idref ctor="gbcsSS" gridy="1" gridx="0" weightx="2">
+													<label text="@Betrag" minimumsize="@labelSize" />
+												</idref>
+												<idref ctor="gbcsSS" gridy="1" gridx="1" weightx="5">
+													<varref ctor="textfieldBetrag" actionlistener="loginOkAction" />
+												</idref>
+												<idref ctor="gbcsSS" gridy="1" gridx="2" weightx="2">
+													<label text="@Datum" minimumsize="@labelSize" />
+												</idref>
+												<idref ctor="gbcsSS" gridy="1" gridx="3" weightx="5">
+													<varref ctor="textFieldDatum" actionlistener="loginOkAction" />
+												</idref>
+												<idref ctor="gbcsSS" gridy="1" gridx="4" weightx="2">
+													<label text="@Uhrzeit" minimumsize="@labelSize" />
+												</idref>
+												<idref ctor="gbcsSS" gridy="1" gridx="5" weightx="5">
+													<varref ctor="textFieldUhrzeit" actionlistener="loginOkAction" />
+												</idref>
+											</gridbaglayout>
+										</panel>
+									</constraint>
+									<constraint location="South">
+										<panel>
+											<button var="buttonBuchungSpeichern" text="@Speichern"
+												icon="@okButton" enabled="true" actionlistener="SpeichernAction" />
+											<button var="buttonBuchungAbrechen" text="@Abrechen"
+												icon="@abrechenButton" enabled="true" actionlistener="AbrechenAction" />
+										</panel>
+									</constraint>
+								</borderlayout>
 							</panel>
 						</constraint>
 						<constraint location="Center">
@@ -47,17 +89,17 @@
 								</gridbaglayout>
 							</panel>
 						</constraint>
-						<constraint location="West">
-							<panel>
-								<label text="WelcomeText" anchor="WEST" />
-							</panel>
-						</constraint>
 					</borderlayout>
 				</panel>
 			</constraint>
 			<constraint location="South">
 
 				<panel>
+				</panel>
+			</constraint>
+			<constraint location="West">
+				<panel>
+					<label text="Säule West " anchor="WEST" />
 				</panel>
 			</constraint>
 		</borderlayout>

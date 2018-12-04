@@ -6,14 +6,23 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
+import base.BuchungType;
 import base.DatenbankManager;
+import base.Konto;
 import base.User;
 
 
 public class DatenbankManagerImp implements DatenbankManager{
 
 	private Connection conn = null;
+	private Statement statement = null;
+	private String SQLStatement = null;
+	private ResultSet resultSet = null;
+	
+	
 	public DatenbankManagerImp()
 	{
 		conn = connectDatenbankServer();
@@ -41,13 +50,87 @@ public class DatenbankManagerImp implements DatenbankManager{
 		return getUserObject(userid);
 	}
 	
+	public List<BuchungType> getBuchungTypen() throws RemoteException{
+		return getBuchungTypenPrivate();
+	}
+	
+	public List<Konto> getKontonamen() throws RemoteException{
+		return getKontonamenPrivate();
+	}
+
+	
+	private List<Konto> getKontonamenPrivate()
+	{
+		List<Konto> Konto = new ArrayList<Konto>();
+		
+		String typename = null;
+		int index = 0;
+		
+		try {
+			statement = conn.createStatement();
+			SQLStatement = "SELECT * FROM `Konto`;";
+			resultSet = statement.executeQuery(SQLStatement);
+
+			while(resultSet.next())
+			{
+				typename = resultSet.getString("KONTONAME");
+				index = resultSet.getInt("number");
+				Konto result = new Konto(index, typename);
+				Konto.add(result);
+			}
+
+			if (resultSet != null) {
+				resultSet.close();
+			}
+
+			if (statement != null) {
+				statement.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return Konto;
+	}
+	
+	
+	private List<BuchungType> getBuchungTypenPrivate()
+	{
+		List<BuchungType> Typen = new ArrayList<BuchungType>();
+		
+		String typename = null;
+		int index = 0;
+		
+		try {
+			statement = conn.createStatement();
+			SQLStatement = "SELECT * FROM `Buchungtypen`;";
+			resultSet = statement.executeQuery(SQLStatement);
+
+			while(resultSet.next())
+			{
+				typename = resultSet.getString("TYPE");
+				index = resultSet.getInt(1);
+				BuchungType result = new BuchungType(index, typename);
+				Typen.add(result);
+			}
+
+			if (resultSet != null) {
+				resultSet.close();
+			}
+
+			if (statement != null) {
+				statement.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return Typen;
+	}
 	
 	private User getUserObject(int userid)
 	{
 		User userobject = null;
-		Statement statement = null;
-		String SQLStatement = null;
-		ResultSet resultSet = null;
 	    String username;
 		String vorname;
 		String nachname;
@@ -91,9 +174,6 @@ public class DatenbankManagerImp implements DatenbankManager{
 	private int createNewUser(String username, String passwort, String vorname, String nachname, int Geschlecht)
 	{
 		int usernumber = 0;
-		Statement statement = null;
-		String SQLStatement = null;
-		ResultSet resultSet = null;
 		int returncode = 0;
 
 
@@ -139,9 +219,6 @@ public class DatenbankManagerImp implements DatenbankManager{
 
 	private int checkUserAvailableImp(String username)
 	{
-		Statement statement = null;
-		String SQLStatement = null;
-		ResultSet resultSet = null;
 		int found = 0;
 
 		try {
@@ -181,9 +258,6 @@ public class DatenbankManagerImp implements DatenbankManager{
 
 	private int checkUserLogin(String username, String passwort)
 	{
-		Statement statement = null;
-		String SQLStatement = null;
-		ResultSet resultSet = null;
 		int usernumber= -1;
 		int found = 0;
 

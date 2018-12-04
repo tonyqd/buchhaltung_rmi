@@ -60,7 +60,6 @@ public class MenuePanel extends TemplatePanel {
 		menuePanelFrame.setVisible(true);
 		menuePanelFrame.setFocusable(true);
 		WelcomeText.setText("Willkommen Herr " + getUserObject().getNachname() + "!");
-		
 	}	
 	
 	

@@ -1,14 +1,20 @@
 package client.panel;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+
+import base.BuchungType;
 import base.ConnectionManager;
 import base.DatenbankManager;
+import base.Konto;
 import base.User;
 import client.manager.ServerSystemManager;
 import cookxml.cookswing.CookSwing;
@@ -26,7 +32,15 @@ public class TemplatePanel extends JPanel {
 	protected DatenbankManager datenbankStub = null; 
 	protected ConnectionManager connectionStub = null;
 	private User userObject = null;
+	private List<BuchungType> buchungTypenObject = null;
+	private List<Konto> KontonamenObject = null;
+	protected HashMap<Integer, String> KontonameIntToString = new HashMap<Integer, String>();
+	protected HashMap<String, Integer> KontonameStringToInt = new HashMap<String, Integer>();
+	protected HashMap<Integer, String> BuchungtypenIntToString = new HashMap<Integer, String>();
+	protected HashMap<String, Integer> BuchungtypenStringToInt = new HashMap<String, Integer>();
 	protected int userid = -1;
+	
+	protected List<JFrame> runningJFrame = new ArrayList<JFrame>();
 
 
 
@@ -105,6 +119,49 @@ public class TemplatePanel extends JPanel {
 		}
 		return userObject;
 	}
+	
+	protected List<BuchungType> getBuchungTypen()
+	{
+		if (buchungTypenObject == null)
+		{
+			try {
+				buchungTypenObject = ServerSystemManager.getDatenbankManager().getBuchungTypen();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			BuchungtypenIntToString.clear();
+			BuchungtypenStringToInt.clear();
+			for(BuchungType temp : buchungTypenObject)
+			{
+				BuchungtypenIntToString.put(temp.getIndex(), temp.getBuchungname());
+				BuchungtypenStringToInt.put(temp.getBuchungname(), temp.getIndex());
+			}
+		}
+		
+		return buchungTypenObject;
+	}
+	
+	protected List<Konto> getKontonamen()
+	{
+		if (KontonamenObject == null)
+		{
+			try {
+				KontonamenObject = ServerSystemManager.getDatenbankManager().getKontonamen();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+			KontonameIntToString.clear();
+			KontonameStringToInt.clear();
+			for(Konto temp : KontonamenObject)
+			{
+				KontonameIntToString.put(temp.getIndex(), temp.getKontoname());
+				KontonameStringToInt.put(temp.getKontoname(), temp.getIndex());
+			}
+		}
+		
+		return KontonamenObject;
+	}
+
 
 }
 

@@ -2,6 +2,7 @@ package base;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 public interface DatenbankManager  extends Remote{
 	public static final String SERVICE_NAME = "Datenbank";
@@ -15,4 +16,8 @@ public interface DatenbankManager  extends Remote{
 	int createUser(String username, String passwort, String vorname, String nachname, int Geschlecht) throws RemoteException;
 	
 	User getUser(int userid) throws RemoteException;
+	
+	List<BuchungType> getBuchungTypen() throws RemoteException;
+	
+	List<Konto> getKontonamen() throws RemoteException;
 }
