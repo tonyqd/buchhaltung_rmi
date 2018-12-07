@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<frame var="buchungPanelFrame" title="@buchungen" tag="frame"
+<frame var="buchungPanelFrame" resourcebundle="buchungPanel" title="@buchungen" tag="frame"
 	locationrelativeto="null" windowlistener="frameListener" minimumsize="700,700"
 	preferredsize="700,700">
 	<panel var="buchungPanel">
@@ -101,15 +101,7 @@
 										</panel>
 									</constraint>
 									<constraint location="Center">
-										<panel>
-											<gridbaglayout>
-												<gridbagconstraints id="gbcsSS" weightx="1"
-													weighty="0" anchor="WEST" fill="HORIZONTAL" insets="2,2,2,2" />
-												<idref ctor="gbcsSS" gridy="0" gridx="0" weightx="2">
-													<label text="@Buchungtypen" minimumsize="@labelSize" />
-												</idref>
-											</gridbaglayout>
-										</panel>
+										<varref ctor="scrollPaneBuchungTable" />
 									</constraint>
 								</borderlayout>
 							</panel>
@@ -120,7 +112,7 @@
 			<constraint location="South">
 
 				<panel>
-					<label text="status bar!!!" minimumsize="@labelSize" />
+					<label var = "statusbar" text="status bar!!!" minimumsize="@labelSize" />
 				</panel>
 			</constraint>
 			<constraint location="West">

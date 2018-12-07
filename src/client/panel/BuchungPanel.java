@@ -11,8 +11,11 @@ import java.text.Format;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
@@ -21,17 +24,22 @@ import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFormattedTextField.AbstractFormatter;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
 
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
 import org.jdatepicker.impl.UtilDateModel;
 
+import base.Buchung;
 import base.BuchungType;
 import base.Konto;
+import client.elements.YDjxtable;
 import client.manager.ServerSystemManager;
 import cookxml.cookswing.CookSwing;
 
@@ -44,8 +52,10 @@ public class BuchungPanel extends TemplatePanel {
 
 	public  JFrame buchungPanelFrame;
 	private  JFrame parentFrame;
-	private ResourceBundle bundle;
+	private ResourceBundle globalBundle;
+	protected ResourceBundle localBundle;
 	private CookSwing cookSwing;
+	protected List<Buchung> buchungTableData = null;
 
 	public JPanel buchungPanel = null;
 	public JPanel buchungInnerPanel = null;
@@ -53,6 +63,7 @@ public class BuchungPanel extends TemplatePanel {
 	public JPanel bisPanel = null;
 	public JPanel currentPanel = null;
 
+	public JLabel statusbar = null;
 	public JComboBox<String> comboboxBuchungtypen;
 	public JComboBox<String> comboboxKonto;
 	public JButton   buttonBuchungSpeichern;
@@ -60,6 +71,7 @@ public class BuchungPanel extends TemplatePanel {
 	public JButton   buttonZeitraumUpdate;
 	public JFormattedTextField textFieldUhrzeit = null;
 	public JFormattedTextField textfieldBetrag = null;
+	public JScrollPane scrollPaneBuchungTable = null;
 
 	public UtilDateModel model1 = null;
 	public UtilDateModel model2 = null;
@@ -70,13 +82,17 @@ public class BuchungPanel extends TemplatePanel {
 	public JDatePickerImpl datePickerVon = null;
 	public JDatePickerImpl datePickerBis = null;
 	public JDatePickerImpl datePickerCurrent = null;
+	
+	private YDjxtable tableBuchungen = null;
 
 
 
 	public BuchungPanel(ResourceBundle bundle, JFrame parent)
 	{
 		this.parentFrame = parent;
-		this.bundle = bundle;
+		this.globalBundle = bundle;
+		Locale de_DE = new Locale("de", "DE");
+		localBundle = ResourceBundle.getBundle("client.bundles.buchungPanel", de_DE); 
 		cookSwing = new CookSwing(this);
 		cookSwing.setResourceBundle(bundle);
 		init();
@@ -96,8 +112,9 @@ public class BuchungPanel extends TemplatePanel {
 
 		Format timeFormat = new SimpleDateFormat("HH:mm");
 		textFieldUhrzeit = new JFormattedTextField(timeFormat);
-
-
+		
+		scrollPaneBuchungTable = new JScrollPane();
+		scrollPaneBuchungTable.setViewportView(getTableBuchungen());
 		buchungPanelFrame = (JFrame)cookSwing.render("src/client/panel/ext/buchungPanel.xml");
 		buchungPanelFrame.setVisible(true);
 		buchungPanelFrame.setFocusable(true);
@@ -141,7 +158,7 @@ public class BuchungPanel extends TemplatePanel {
 	{
 		public void windowClosing (WindowEvent e)
 		{
-			final boolean leave = notifyForLeaving(buchungPanelFrame, bundle,bundle.getString("LeavingMessage"));
+			final boolean leave = notifyForLeaving(buchungPanelFrame, globalBundle,globalBundle.getString("LeavingMessage"));
 			if (leave)
 			{
 				buchungPanelFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -178,6 +195,7 @@ public class BuchungPanel extends TemplatePanel {
 			String uhrzeitString;
 	        int buchungType;
 	        int konto;
+	        int returncode = -1;
 			
 			// Get Betrag
 			betragString = textfieldBetrag.getText();
@@ -202,17 +220,22 @@ public class BuchungPanel extends TemplatePanel {
 			String Kontotype = comboboxKonto.getSelectedItem().toString();
 			konto = KontonameStringToInt.get(Kontotype);
 			
-			System.out.println("Datum: " + datumString);
-			System.out.println("Betrag: " + betragString);
-			System.out.println("Uhrzeit: " + uhrzeitString);
-			System.out.println("Katalog: " + buchungType);
-			System.out.println("Konto: " + konto);
-			System.out.println("uid: " + getUserObject().getUserid());
+			Buchung tempBuchung = new Buchung(getUserObject().getUserid(), konto, buchungType, betragString, datumString, uhrzeitString);
 			
 			try {
-				ServerSystemManager.getDatenbankManager().insertBuchung(getUserObject().getUserid(), konto, buchungType, betragString, datumString, uhrzeitString);
+				returncode = ServerSystemManager.getDatenbankManager().insertBuchung(tempBuchung);
 			} catch (RemoteException e1) {
 				e1.printStackTrace();
+				returncode = -1;
+			}
+			
+			if (returncode == 1)
+			{
+				statusbar.setText("Speichern successful! ");
+			}
+			else
+			{
+				statusbar.setText("Speichern failed!!!");
 			}
 			
 		}
@@ -222,6 +245,7 @@ public class BuchungPanel extends TemplatePanel {
 	{
 		public void actionPerformed (ActionEvent e)
 		{
+			String von, bis;
 			Calendar cal =  Calendar.getInstance();
 			cal.setTime(model1.getValue());
 			int selectedVonDay = cal.get(Calendar.DAY_OF_MONTH);
@@ -236,7 +260,22 @@ public class BuchungPanel extends TemplatePanel {
 			//			System.out.println(model2.getValue().toString());
 			//			System.out.println(selectedVonYear +""+ selectedVonMonth+"" +selectedVonDay );
 			//			System.out.println(selectedBisYear+""+selectedBisMonth+ "" +selectedBisDay );
-			System.out.println("refresh action!");
+			
+			Date Datumvon = model1.getValue();
+			Date Datumbis = model2.getValue();
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+			von = formatter.format(Datumvon);
+			bis = formatter.format(Datumbis);
+			userid = getUserObject().getUserid();
+			
+			try {
+				buchungTableData = getDatenbankManager().getBuchungen(userid, von, bis);
+			} catch (RemoteException e1) {
+				e1.printStackTrace();
+			}
+			
+			System.out.println(buchungTableData.toString());
+			System.out.println("von: " + von + "bis:" + bis );
 		}
 	};
 
@@ -298,6 +337,20 @@ public class BuchungPanel extends TemplatePanel {
 	{
 		Calendar cal = Calendar.getInstance();
 		textFieldUhrzeit.setValue(cal.getTime());
+	}
+	
+	public YDjxtable getTableBuchungen()
+	{
+		if (tableBuchungen == null)
+		{
+			tableBuchungen = new YDjxtable();
+			tableBuchungen.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			final BuchungTableModel table = new BuchungTableModel();
+			table.setData(new ArrayList<Buchung>());
+			tableBuchungen.setModel(table);
+		}
+		
+		return tableBuchungen;
 	}
 
 

@@ -9,6 +9,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import base.Buchung;
 import base.BuchungType;
 import base.DatenbankManager;
 import base.Konto;
@@ -58,12 +59,73 @@ public class DatenbankManagerImp implements DatenbankManager{
 		return getKontonamenPrivate();
 	}
 
-	public int insertBuchung(int user, int konto, int type, String betrag, String Date, String time) throws RemoteException
+	public int insertBuchung(Buchung buchung) throws RemoteException
 	{
-		return insertBuchungprivate(user, konto, type, betrag, Date, time);
+		return insertBuchungprivate(buchung);
 	}
 
-	private int insertBuchungprivate(int user, int konto, int type, String betrag, String Date, String time)
+	public List<Buchung> getBuchungen(int userid, String von, String bis) throws RemoteException
+	{
+		return getBuchungenPrivate(userid, von, bis);
+	}
+	
+	
+	
+	
+	
+	
+	private List<Buchung> getBuchungenPrivate(int userid, String von, String bis)
+	{
+		List<Buchung> buchungen = new ArrayList<Buchung>();
+		int number, type, konto;
+		String Date;
+		String Time;
+		String betrag;
+		int userid1;
+		
+		try {
+			statement = conn.createStatement();
+			SQLStatement = "SELECT * FROM `buchungen` where Date >='" + von + "' and DATE <= '" + bis + "' AND USER = "+ userid +" ORDER BY DATE, TIME;";
+			resultSet = statement.executeQuery(SQLStatement);
+			System.out.println(SQLStatement.toString());
+
+			while(resultSet.next())
+			{
+				System.out.println("ok!");
+				number =  resultSet.getInt(1);
+				Date = resultSet.getString("DATE");
+				Time = resultSet.getString("TIME");
+				type = resultSet.getInt(4);
+				betrag= resultSet.getString("BETRAG");
+				konto = resultSet.getInt(6);
+				userid1 = resultSet.getInt(7);
+				
+				Buchung result = new Buchung(number, userid1, konto, type, betrag, Date, Time);
+				buchungen.add(result);
+			}
+
+			if (resultSet != null) {
+				resultSet.close();
+			}
+
+			if (statement != null) {
+				statement.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return buchungen;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	private int insertBuchungprivate(Buchung buchung)
 	{
 		int returncode = -1;
 		int buchungnumber = 0;
@@ -82,9 +144,9 @@ public class DatenbankManagerImp implements DatenbankManager{
 			try {
 				statement = conn.createStatement();
 				SQLStatement = "INSERT INTO `buchungen`  (`number`, `Date`, `time`, `type`, `betrag`, `konto`, `user`) VALUES (" +  
-						buchungnumber + ", \""+ Date + "\", \""+ time + "\", "+ type + ", "+ betrag +", "+konto+", "+ user+" );";
+						buchungnumber + ", \""+ buchung.getDatum() + "\", \""+ buchung.getUhrzeit() + "\", "+ buchung.getBuchungsType() + ", "+ buchung.getBetrag()
+						       +", "+buchung.getKonto() +", "+ buchung.getUserid()+" );";
 				returncode = statement.executeUpdate(SQLStatement);
-				System.out.println(SQLStatement.toString());
 
 				if (statement != null) {
 					statement.close();
