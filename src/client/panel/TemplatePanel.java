@@ -26,21 +26,21 @@ public class TemplatePanel extends JPanel {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private ResourceBundle bundle;
+	private static ResourceBundle bundle;
 	private CookSwing cookSwing;
 
-	protected DatenbankManager datenbankStub = null; 
-	protected ConnectionManager connectionStub = null;
-	private User userObject = null;
-	private List<BuchungType> buchungTypenObject = null;
-	private List<Konto> KontonamenObject = null;
-	protected HashMap<Integer, String> KontonameIntToString = new HashMap<Integer, String>();
-	protected HashMap<String, Integer> KontonameStringToInt = new HashMap<String, Integer>();
-	protected HashMap<Integer, String> BuchungtypenIntToString = new HashMap<Integer, String>();
-	protected HashMap<String, Integer> BuchungtypenStringToInt = new HashMap<String, Integer>();
-	protected int userid = -1;
+	protected static DatenbankManager datenbankStub = null; 
+	protected static ConnectionManager connectionStub = null;
+	protected static User userObject = null;
+	private static List<BuchungType> buchungTypenObject = null;
+	private static List<Konto> KontonamenObject = null;
+	protected static HashMap<Integer, String> KontonameIntToString = new HashMap<Integer, String>();
+	protected static HashMap<String, Integer> KontonameStringToInt = new HashMap<String, Integer>();
+	protected static HashMap<Integer, String> BuchungtypenIntToString = new HashMap<Integer, String>();
+	protected static HashMap<String, Integer> BuchungtypenStringToInt = new HashMap<String, Integer>();
+	protected static int userid = -1;
 	
-	protected List<JFrame> runningJFrame = new ArrayList<JFrame>();
+	protected static List<JFrame> runningJFrame = new ArrayList<JFrame>();
 
 
 
@@ -114,6 +114,7 @@ public class TemplatePanel extends JPanel {
 			try {
 				userObject = ServerSystemManager.getDatenbankManager().getUser(userid);
 			} catch (RemoteException e) {
+				System.out.println("err!");
 				e.printStackTrace();
 			}
 		}

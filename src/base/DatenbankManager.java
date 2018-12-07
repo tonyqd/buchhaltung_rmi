@@ -20,4 +20,6 @@ public interface DatenbankManager  extends Remote{
 	List<BuchungType> getBuchungTypen() throws RemoteException;
 	
 	List<Konto> getKontonamen() throws RemoteException;
+	
+	int insertBuchung(int user, int konto, int type, String betrag, String Date, String time) throws RemoteException;
 }

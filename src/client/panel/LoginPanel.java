@@ -45,7 +45,7 @@ public class LoginPanel extends TemplatePanel {
 	public JButton   buttonAbrechen;
 	public JLabel    textRegistieren;
 
-	protected int usernumber = -1;
+	private int usernumber = -1;
 
 
 

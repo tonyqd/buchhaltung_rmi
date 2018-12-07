@@ -21,8 +21,8 @@ public class DatenbankManagerImp implements DatenbankManager{
 	private Statement statement = null;
 	private String SQLStatement = null;
 	private ResultSet resultSet = null;
-	
-	
+
+
 	public DatenbankManagerImp()
 	{
 		conn = connectDatenbankServer();
@@ -45,27 +45,76 @@ public class DatenbankManagerImp implements DatenbankManager{
 			throws RemoteException{
 		return createNewUser(username, passwort, vorname, nachname, Geschlecht);
 	}
-	
+
 	public User getUser(int userid) throws RemoteException{
 		return getUserObject(userid);
 	}
-	
+
 	public List<BuchungType> getBuchungTypen() throws RemoteException{
 		return getBuchungTypenPrivate();
 	}
-	
+
 	public List<Konto> getKontonamen() throws RemoteException{
 		return getKontonamenPrivate();
 	}
 
-	
+	public int insertBuchung(int user, int konto, int type, String betrag, String Date, String time) throws RemoteException
+	{
+		return insertBuchungprivate(user, konto, type, betrag, Date, time);
+	}
+
+	private int insertBuchungprivate(int user, int konto, int type, String betrag, String Date, String time)
+	{
+		int returncode = -1;
+		int buchungnumber = 0;
+		try {
+			statement = conn.createStatement();
+			SQLStatement = "SELECT MAX(number) FROM buchungen ";
+			resultSet = statement.executeQuery(SQLStatement);
+
+			while(resultSet.next())
+			{
+				buchungnumber = resultSet.getInt(1);
+			}
+			
+			buchungnumber ++;
+			
+			try {
+				statement = conn.createStatement();
+				SQLStatement = "INSERT INTO `buchungen`  (`number`, `Date`, `time`, `type`, `betrag`, `konto`, `user`) VALUES (" +  
+						buchungnumber + ", \""+ Date + "\", \""+ time + "\", "+ type + ", "+ betrag +", "+konto+", "+ user+" );";
+				returncode = statement.executeUpdate(SQLStatement);
+				System.out.println(SQLStatement.toString());
+
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				return -1;
+			}
+			
+
+			if (resultSet != null) {
+				resultSet.close();
+			}
+
+			if (statement != null) {
+				statement.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return returncode;
+	}
+
 	private List<Konto> getKontonamenPrivate()
 	{
 		List<Konto> Konto = new ArrayList<Konto>();
-		
+
 		String typename = null;
 		int index = 0;
-		
+
 		try {
 			statement = conn.createStatement();
 			SQLStatement = "SELECT * FROM `Konto`;";
@@ -89,18 +138,18 @@ public class DatenbankManagerImp implements DatenbankManager{
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return Konto;
 	}
-	
-	
+
+
 	private List<BuchungType> getBuchungTypenPrivate()
 	{
 		List<BuchungType> Typen = new ArrayList<BuchungType>();
-		
+
 		String typename = null;
 		int index = 0;
-		
+
 		try {
 			statement = conn.createStatement();
 			SQLStatement = "SELECT * FROM `Buchungtypen`;";
@@ -124,17 +173,17 @@ public class DatenbankManagerImp implements DatenbankManager{
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return Typen;
 	}
-	
+
 	private User getUserObject(int userid)
 	{
 		User userobject = null;
-	    String username;
+		String username;
 		String vorname;
 		String nachname;
-		
+
 		try {
 			statement = conn.createStatement();
 			SQLStatement = "SELECT * FROM `user` WHERE `usernumber` = " + userid + " ;";
@@ -158,18 +207,18 @@ public class DatenbankManagerImp implements DatenbankManager{
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return userobject;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+
+
+
+
+
+
+
 
 	private int createNewUser(String username, String passwort, String vorname, String nachname, int Geschlecht)
 	{
@@ -198,13 +247,12 @@ public class DatenbankManagerImp implements DatenbankManager{
 			e.printStackTrace();
 		}
 
-				usernumber ++;
+		usernumber ++;
 
 		try {
 			statement = conn.createStatement();
 			SQLStatement = "INSERT INTO `user`  (`usernumber`, `username`, `passwort`, `berechtigung`, `Vorname`, `Nachname`, `Geschlecht`) VALUES (" +  
 					usernumber + ", \""+ username + "\", \""+ passwort + "\", 1, \""+ vorname + "\", \""+ nachname +"\", "+Geschlecht+" );";
-			System.out.println(SQLStatement.toString());
 			returncode = statement.executeUpdate(SQLStatement);
 
 			if (statement != null) {
