@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<frame var="buchungPanelFrame" resourcebundle="buchungPanel" title="@buchungen" tag="frame"
-	locationrelativeto="null" windowlistener="frameListener" minimumsize="700,700"
-	preferredsize="700,700">
+<frame var="buchungPanelFrame" resourcebundle="buchungPanel"
+	title="@buchungen" tag="frame" locationrelativeto="null"
+	windowlistener="frameListener" minimumsize="700,700" preferredsize="700,700">
 	<panel var="buchungPanel">
 		<borderlayout>
 			<constraint location="North">
@@ -26,20 +26,23 @@
 												</idref>
 												<idref ctor="gbcsSS" gridy="0" gridx="1" weightx="5">
 													<combobox var="comboboxBuchungtypen"
-														preferredsize="75,22" actionlistener="abreartAction" />
+														preferredsize="75,22" actionlistener="abreartAction"
+														enabled="false" itemlistener="ComboboxChanged" />
 												</idref>
 												<idref ctor="gbcsSS" gridy="0" gridx="2" weightx="2">
 													<label text="@Konto" minimumsize="@labelSize" />
 												</idref>
 												<idref ctor="gbcsSS" gridy="0" gridx="3" weightx="5">
 													<combobox var="comboboxKonto" preferredsize="75,22"
-														actionlistener="abreartAction" />
+														actionlistener="abreartAction" enabled="false"
+														itemlistener="ComboboxChanged" />
 												</idref>
 												<idref ctor="gbcsSS" gridy="1" gridx="0" weightx="2">
 													<label text="@Betrag" minimumsize="@labelSize" />
 												</idref>
 												<idref ctor="gbcsSS" gridy="1" gridx="1" weightx="5">
-													<varref ctor="textfieldBetrag" actionlistener="loginOkAction" />
+													<varref ctor="textfieldBetrag" enabled="false"
+														actionlistener="loginOkAction" />
 												</idref>
 												<idref ctor="gbcsSS" gridy="1" gridx="2" weightx="2">
 													<label text="@Datum" minimumsize="@labelSize" />
@@ -51,7 +54,8 @@
 													<label text="@Uhrzeit" minimumsize="@labelSize" />
 												</idref>
 												<idref ctor="gbcsSS" gridy="1" gridx="5" weightx="5">
-													<varref ctor="textFieldUhrzeit" actionlistener="loginOkAction" />
+													<varref ctor="textFieldUhrzeit" enabled="false"
+														actionlistener="loginOkAction" />
 												</idref>
 												<idref ctor="gbcsSS" gridy="2" gridx="2" weightx="2">
 													<label text="@Datum" minimumsize="@labelSize" />
@@ -64,8 +68,10 @@
 									</constraint>
 									<constraint location="South">
 										<panel>
+											<button var="buttonBuchungAnlegen" text="@Anlegen"
+												icon="@anlegenButton" enabled="true" actionlistener="AnlegenAction" />
 											<button var="buttonBuchungSpeichern" text="@Speichern"
-												icon="@okButton" enabled="true" actionlistener="SpeichernAction" />
+												icon="@okButton" enabled="false" actionlistener="SpeichernAction" />
 											<button var="buttonBuchungAbrechen" text="@Abrechen"
 												icon="@abrechenButton" enabled="true" actionlistener="AbrechenAction" />
 										</panel>
@@ -95,7 +101,7 @@
 												</idref>
 												<idref ctor="gbcsSS" gridy="0" gridx="5" weightx="3">
 													<button var="buttonZeitraumUpdate" text="@update"
-												icon="@refreshButton" enabled="true" actionlistener="RefreshAction" />
+														icon="@refreshButton" enabled="true" actionlistener="RefreshAction" />
 												</idref>
 											</gridbaglayout>
 										</panel>
@@ -112,7 +118,7 @@
 			<constraint location="South">
 
 				<panel>
-					<label var = "statusbar" text="status bar!!!" minimumsize="@labelSize" />
+					<label var="statusbar" text="status bar!!!" minimumsize="@labelSize" />
 				</panel>
 			</constraint>
 			<constraint location="West">

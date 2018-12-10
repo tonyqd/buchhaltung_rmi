@@ -2,6 +2,8 @@ package client.panel;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -11,13 +13,13 @@ import java.text.Format;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -28,9 +30,12 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.WindowConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.impl.JDatePickerImpl;
@@ -38,6 +43,7 @@ import org.jdatepicker.impl.UtilDateModel;
 
 import base.Buchung;
 import base.BuchungType;
+import base.IconStore;
 import base.Konto;
 import client.elements.YDjxtable;
 import client.manager.ServerSystemManager;
@@ -56,6 +62,7 @@ public class BuchungPanel extends TemplatePanel {
 	protected ResourceBundle localBundle;
 	private CookSwing cookSwing;
 	protected List<Buchung> buchungTableData = null;
+	protected Buchung selectedBuchung = null;
 
 	public JPanel buchungPanel = null;
 	public JPanel buchungInnerPanel = null;
@@ -66,6 +73,8 @@ public class BuchungPanel extends TemplatePanel {
 	public JLabel statusbar = null;
 	public JComboBox<String> comboboxBuchungtypen;
 	public JComboBox<String> comboboxKonto;
+
+	public JButton   buttonBuchungAnlegen;
 	public JButton   buttonBuchungSpeichern;
 	public JButton   buttonBuchungAbrechen;
 	public JButton   buttonZeitraumUpdate;
@@ -82,7 +91,7 @@ public class BuchungPanel extends TemplatePanel {
 	public JDatePickerImpl datePickerVon = null;
 	public JDatePickerImpl datePickerBis = null;
 	public JDatePickerImpl datePickerCurrent = null;
-	
+
 	private YDjxtable tableBuchungen = null;
 
 
@@ -109,20 +118,26 @@ public class BuchungPanel extends TemplatePanel {
 		NumberFormat percentFormat = NumberFormat.getNumberInstance();
 		percentFormat.setMinimumFractionDigits(2);
 		textfieldBetrag = new JFormattedTextField(percentFormat);
-
+		textfieldBetrag.setValue(0);
+		
 		Format timeFormat = new SimpleDateFormat("HH:mm");
 		textFieldUhrzeit = new JFormattedTextField(timeFormat);
-		
+
 		scrollPaneBuchungTable = new JScrollPane();
 		scrollPaneBuchungTable.setViewportView(getTableBuchungen());
 		buchungPanelFrame = (JFrame)cookSwing.render("src/client/panel/ext/buchungPanel.xml");
 		buchungPanelFrame.setVisible(true);
 		buchungPanelFrame.setFocusable(true);
-
+		textfieldBetrag.getDocument().addDocumentListener(textFieldChangeListener);
+		textFieldUhrzeit.getDocument().addDocumentListener(textFieldChangeListener);
 		initComboboxBuchungstypen();
 		initComboboxKonto();
 		initDatePicker();
 		initTimeField();
+		buttonBuchungSpeichern.setEnabled(false);
+		comboboxBuchungtypen.setEnabled(false);
+		comboboxKonto.setEnabled(false);
+
 
 	}	
 
@@ -170,12 +185,57 @@ public class BuchungPanel extends TemplatePanel {
 			}
 		}
 	};
+	
+	public DocumentListener textFieldChangeListener = new DocumentListener() {
+		public void changedUpdate(DocumentEvent documentEvent) {
+			check();
+		}
+		public void insertUpdate(DocumentEvent documentEvent) {
+			check();
+		}
+		public void removeUpdate(DocumentEvent documentEvent) {
+			check();
+		}
+
+		private void check()
+		{
+			buttonBuchungSpeichern.setEnabled(true);
+		}
+	};
 
 	public ActionListener AbrechenAction = new ActionListener ()
 	{
 		public void actionPerformed (ActionEvent e)
 		{
-			textfieldBetrag.setText("");
+			if(selectedBuchung == null)
+			{
+				textfieldBetrag.setText("");
+				Calendar cal = Calendar.getInstance();
+				int bisDay = cal.get(Calendar.DAY_OF_MONTH);
+				int bisMonth = cal.get(Calendar.MONTH);
+				int bisYear = cal.get(Calendar.YEAR);
+				model3.setDate(bisYear, bisMonth, bisDay);
+				model3.setSelected(true);
+				initTimeField();
+				textfieldBetrag.setEnabled(false);
+				textFieldUhrzeit.setEnabled(false);
+				comboboxBuchungtypen.setEnabled(false);
+				comboboxKonto.setEnabled(false);
+			}
+			else
+			{
+				ReloadBuchung();
+			}
+			buttonBuchungSpeichern.setEnabled(false);
+		}
+	};
+
+	public ActionListener AnlegenAction = new ActionListener ()
+	{
+		public void actionPerformed (ActionEvent e)
+		{
+			selectedBuchung = null;
+			textfieldBetrag.setValue(0);
 			Calendar cal = Calendar.getInstance();
 			int bisDay = cal.get(Calendar.DAY_OF_MONTH);
 			int bisMonth = cal.get(Calendar.MONTH);
@@ -183,8 +243,14 @@ public class BuchungPanel extends TemplatePanel {
 			model3.setDate(bisYear, bisMonth, bisDay);
 			model3.setSelected(true);
 			initTimeField();
+			textfieldBetrag.setEnabled(true);
+			textFieldUhrzeit.setEnabled(true);
+			comboboxBuchungtypen.setEnabled(true);
+			comboboxKonto.setEnabled(true);
+
 		}
 	};
+
 
 	public ActionListener SpeichernAction = new ActionListener ()
 	{
@@ -193,10 +259,11 @@ public class BuchungPanel extends TemplatePanel {
 			String betragString;
 			String datumString;
 			String uhrzeitString;
-	        int buchungType;
-	        int konto;
-	        int returncode = -1;
-			
+			int buchungType;
+			int konto;
+			int buchungsNumber = -1;
+			int returncode = -1;
+
 			// Get Betrag
 			betragString = textfieldBetrag.getText();
 			if (betragString.equals(""))
@@ -213,22 +280,42 @@ public class BuchungPanel extends TemplatePanel {
 			datumString = formatter.format(Datum);
 			uhrzeitString=textFieldUhrzeit.getText();
 			uhrzeitString = uhrzeitString.concat(":00");
-			
+
 			// Get Buchungstype/Konto
 			String Katalog = comboboxBuchungtypen.getSelectedItem().toString();
 			buchungType = BuchungtypenStringToInt.get(Katalog);
 			String Kontotype = comboboxKonto.getSelectedItem().toString();
 			konto = KontonameStringToInt.get(Kontotype);
-			
-			Buchung tempBuchung = new Buchung(getUserObject().getUserid(), konto, buchungType, betragString, datumString, uhrzeitString);
-			
-			try {
-				returncode = ServerSystemManager.getDatenbankManager().insertBuchung(tempBuchung);
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-				returncode = -1;
+
+			if (selectedBuchung == null)
+			{
+				buchungsNumber = -1;
+
+				Buchung tempBuchung = new Buchung(buchungsNumber, getUserObject().getUserid(), konto, buchungType, betragString, datumString, uhrzeitString);
+
+				try {
+					returncode = ServerSystemManager.getDatenbankManager().insertBuchung(tempBuchung);
+				} catch (RemoteException e1) {
+					e1.printStackTrace();
+					returncode = -1;
+				}
+			}
+			else
+			{
+				buchungsNumber = selectedBuchung.getBuchungnumber();
+				Buchung tempBuchung = new Buchung(buchungsNumber, getUserObject().getUserid(), konto, buchungType, betragString, datumString, uhrzeitString);
+				try {
+					returncode = ServerSystemManager.getDatenbankManager().updateBuchung(tempBuchung);
+				} catch (RemoteException e1) {
+					e1.printStackTrace();
+					returncode = -1;
+				}
 			}
 			
+			Date Datumvon = model1.getValue();
+			Date Datumbis = model2.getValue();
+			getTableContent(Datumvon, Datumbis);
+
 			if (returncode == 1)
 			{
 				statusbar.setText("Speichern successful! ");
@@ -237,7 +324,7 @@ public class BuchungPanel extends TemplatePanel {
 			{
 				statusbar.setText("Speichern failed!!!");
 			}
-			
+
 		}
 	};
 
@@ -245,39 +332,74 @@ public class BuchungPanel extends TemplatePanel {
 	{
 		public void actionPerformed (ActionEvent e)
 		{
-			String von, bis;
-			Calendar cal =  Calendar.getInstance();
-			cal.setTime(model1.getValue());
-			int selectedVonDay = cal.get(Calendar.DAY_OF_MONTH);
-			int selectedVonMonth = cal.get(Calendar.MONTH) +1;   // wegen bug in datepicker!!!
-			int selectedVonYear = cal.get(Calendar.YEAR);
-
-			cal.setTime(model2.getValue());
-			int selectedBisDay =cal.get(Calendar.DAY_OF_MONTH);
-			int selectedBisMonth = cal.get(Calendar.MONTH) +1;  // wegen bug in datepicker!!!
-			int selectedBisYear = cal.get(Calendar.YEAR);
-			//			System.out.println(model1.getValue().toString());
-			//			System.out.println(model2.getValue().toString());
-			//			System.out.println(selectedVonYear +""+ selectedVonMonth+"" +selectedVonDay );
-			//			System.out.println(selectedBisYear+""+selectedBisMonth+ "" +selectedBisDay );
-			
 			Date Datumvon = model1.getValue();
 			Date Datumbis = model2.getValue();
-			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-			von = formatter.format(Datumvon);
-			bis = formatter.format(Datumbis);
-			userid = getUserObject().getUserid();
-			
-			try {
-				buchungTableData = getDatenbankManager().getBuchungen(userid, von, bis);
-			} catch (RemoteException e1) {
-				e1.printStackTrace();
-			}
-			
-			System.out.println(buchungTableData.toString());
-			System.out.println("von: " + von + "bis:" + bis );
+			getTableContent(Datumvon, Datumbis);
+
 		}
 	};
+
+	private final ListSelectionListener BuchungSelected = new ListSelectionListener() {
+
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			if(!e.getValueIsAdjusting())
+			{
+				ReloadBuchung();
+				buttonBuchungSpeichern.setEnabled(false);
+				textfieldBetrag.setEnabled(true);
+				textFieldUhrzeit.setEnabled(true);
+				comboboxBuchungtypen.setEnabled(true);
+				comboboxKonto.setEnabled(true);
+			}
+		}
+	};
+	
+	public ItemListener ComboboxChanged = new ItemListener() {
+		
+		public void itemStateChanged(ItemEvent e) {
+			buttonBuchungSpeichern.setEnabled(true);
+		}
+	};
+
+	private void ReloadBuchung()
+	{
+		try
+		{
+			selectedBuchung = ((BuchungTableModel)getTableBuchungen().getModel()).getDataAt(getTableBuchungen().convertRowIndexToModel(getTableBuchungen().getSelectedRow()));
+			textfieldBetrag.setValue((Integer.parseInt(selectedBuchung.getBetrag())/100));
+
+			try {
+				DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+				Date tempDate;
+				tempDate = formatter.parse(selectedBuchung.getDatum()+" "+selectedBuchung.getUhrzeit());
+				textFieldUhrzeit.setValue(tempDate);
+				model3.setValue(tempDate);
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+
+			comboboxBuchungtypen.setSelectedItem(BuchungtypenIntToString.get(selectedBuchung.getBuchungsType()));
+			comboboxKonto.setSelectedItem(KontonameIntToString.get(selectedBuchung.getKonto()));
+		}
+		catch (Exception e) {
+		}
+	}
+
+	private void getTableContent(Date von, Date bis)
+	{
+
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		userid = getUserObject().getUserid();
+
+		try {
+			buchungTableData = getDatenbankManager().getBuchungen(userid, formatter.format(von), formatter.format(bis));
+		} catch (RemoteException e1) {
+			e1.printStackTrace();
+		}
+		((BuchungTableModel)(tableBuchungen.getModel())).setData(buchungTableData);
+	}
+
 
 
 	private void initComboboxBuchungstypen()
@@ -328,8 +450,8 @@ public class BuchungPanel extends TemplatePanel {
 		model1.setDate(vonYear, vonMonth, vonDay);
 		model2.setDate(bisYear, bisMonth, bisDay);
 		model3.setDate(bisYear, bisMonth, bisDay);
-		model2.setSelected(true);
 		model1.setSelected(true);
+		model2.setSelected(true);
 		model3.setSelected(true);
 	}
 
@@ -338,7 +460,7 @@ public class BuchungPanel extends TemplatePanel {
 		Calendar cal = Calendar.getInstance();
 		textFieldUhrzeit.setValue(cal.getTime());
 	}
-	
+
 	public YDjxtable getTableBuchungen()
 	{
 		if (tableBuchungen == null)
@@ -346,10 +468,18 @@ public class BuchungPanel extends TemplatePanel {
 			tableBuchungen = new YDjxtable();
 			tableBuchungen.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			final BuchungTableModel table = new BuchungTableModel();
-			table.setData(new ArrayList<Buchung>());
+			table.setData(new Vector<Buchung>());
 			tableBuchungen.setModel(table);
+			tableBuchungen.getSelectionModel().addListSelectionListener(BuchungSelected);
+
+			//Table Initialisieren 
+			Calendar cal = Calendar.getInstance();
+			Date bis = cal.getTime();
+			cal.add(Calendar.DATE, -30);
+			Date von = cal.getTime();
+			getTableContent(von, bis);
 		}
-		
+
 		return tableBuchungen;
 	}
 

@@ -34,10 +34,10 @@ public class TemplatePanel extends JPanel {
 	protected static User userObject = null;
 	private static List<BuchungType> buchungTypenObject = null;
 	private static List<Konto> KontonamenObject = null;
-	protected static HashMap<Integer, String> KontonameIntToString = new HashMap<Integer, String>();
-	protected static HashMap<String, Integer> KontonameStringToInt = new HashMap<String, Integer>();
-	protected static HashMap<Integer, String> BuchungtypenIntToString = new HashMap<Integer, String>();
-	protected static HashMap<String, Integer> BuchungtypenStringToInt = new HashMap<String, Integer>();
+	public static HashMap<Integer, String> KontonameIntToString = new HashMap<Integer, String>();
+	public static HashMap<String, Integer> KontonameStringToInt = new HashMap<String, Integer>();
+	public static HashMap<Integer, String> BuchungtypenIntToString = new HashMap<Integer, String>();
+	public static HashMap<String, Integer> BuchungtypenStringToInt = new HashMap<String, Integer>();
 	protected static int userid = -1;
 	
 	protected static List<JFrame> runningJFrame = new ArrayList<JFrame>();

@@ -69,6 +69,38 @@ public class DatenbankManagerImp implements DatenbankManager{
 		return getBuchungenPrivate(userid, von, bis);
 	}
 	
+	public int updateBuchung(Buchung buchung) throws RemoteException
+	{
+		return updateBuchungPrivate(buchung);
+	}
+	
+	private int updateBuchungPrivate(Buchung buchung)
+	{
+		int returncode = -1;
+			
+			try {
+				statement = conn.createStatement();
+				SQLStatement = "UPDATE `buchungen` SET  `Date` =\""+ buchung.getDatum() +"\", `time`= \""+ buchung.getUhrzeit() +"\", `type`="+ buchung.getBuchungsType() +
+						                               ", `betrag`=\""+ buchung.getBetrag() +"\", `konto` = "+buchung.getKonto()+", `user`= "+ buchung.getUserid()+ " where `number` = "+buchung.getBuchungnumber() +" ;" ;
+				returncode = statement.executeUpdate(SQLStatement);
+
+				if (statement != null) {
+					statement.close();
+				}
+				
+				if (resultSet != null) {
+					resultSet.close();
+				}
+
+				if (statement != null) {
+					statement.close();
+				}
+			} catch (SQLException e) {
+				return -1;
+			}
+
+			return returncode;
+	}
 	
 	
 	
@@ -87,11 +119,9 @@ public class DatenbankManagerImp implements DatenbankManager{
 			statement = conn.createStatement();
 			SQLStatement = "SELECT * FROM `buchungen` where Date >='" + von + "' and DATE <= '" + bis + "' AND USER = "+ userid +" ORDER BY DATE, TIME;";
 			resultSet = statement.executeQuery(SQLStatement);
-			System.out.println(SQLStatement.toString());
 
 			while(resultSet.next())
 			{
-				System.out.println("ok!");
 				number =  resultSet.getInt(1);
 				Date = resultSet.getString("DATE");
 				Time = resultSet.getString("TIME");
@@ -118,12 +148,6 @@ public class DatenbankManagerImp implements DatenbankManager{
 		return buchungen;
 		
 	}
-	
-	
-	
-	
-	
-	
 	
 	private int insertBuchungprivate(Buchung buchung)
 	{
